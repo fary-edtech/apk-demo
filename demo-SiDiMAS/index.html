@@ -29,11 +29,21 @@
 
     <div id="container">
         <iframe 
-            src="https://script.google.com/macros/s/AKfycbxbf5MS7ChL8ltAbh-Z8zV48J0f62OV2eqv_O9Bw_56DhatQlk56SH9VD4-G3N7Cb8F1Q/exec" 
-            allow="camera; microphone; geolocation" 
-            sandbox="allow-scripts allow-forms allow-popups allow-same-origin"
-            loading="lazy">
-        </iframe>
+ src="https://script.google.com/macros/s/AKfycbxbf5MS7ChL8ltAbh-Z8zV48J0f62OV2eqv_O9Bw_56DhatQlk56SH9VD4-G3N7Cb8F1Q/exec" 
+  width="100%" 
+  height="700px" 
+  style="border:none;"
+  
+  /* Memberikan izin fitur sistem & unduhan */
+  sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-scripts allow-same-origin"
+  
+  /* Memberikan izin akses hardware & fitur browser */
+  allow="camera; microphone; geolocation; clipboard-write; display-capture; publickey-credentials-get"
+  
+  /* Memastikan layar penuh diizinkan jika diperlukan */
+  allowfullscreen>
+</iframe>
+    </div>
     </div>
 
 </body>
