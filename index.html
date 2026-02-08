@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fary EdTech - Demo App Gallery</title>
+    <link rel="icon" type="image/png" href="logo.png?v=2">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --text: #0f172a;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 { font-size: 2rem; margin-bottom: 10px; color: var(--primary); }
+        p { color: #64748b; }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .app-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background: #eff6ff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 16px;
+        }
+
+        .app-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+        }
+
+        .app-card p {
+            font-size: 0.85rem;
+            margin: 0;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* Status Badge */
+        .badge {
+            margin-top: 12px;
+            font-size: 0.7rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #166534;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 20px 10px; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Fary EdTech App Gallery</h1>
+        <p>Pilih salah satu aplikasi demo di bawah ini</p>
+    </header>
+
+    <div class="app-grid">
+        <a href="demo-SiAbDi/" class="app-card">
+            <div class="icon-box">📸</div>
+            <h3>SiAbDi</h3>
+            <p>Sistem Absensi Digital untuk Siswa</p>
+            <div class="badge">Siap</div>
+        </a>
+
+        <a href="demo-SiDiMAS/" class="app-card">
+            <div class="icon-box">📦</div>
+            <h3>SiDIMAS</h3>
+            <p>Sistem Digital Manajemen Arsip Surat.</p>
+            <div class="badge">Siap</div>
+        </a>
+
+        <a href="demo-SiKaPProfESi/" class="app-card">
+            <div class="icon-box">📊</div>
+            <h3>SiKaPProfESi</h3>
+            <p>Sistem Kartu Pelajar dan Profil Elektronik Siswa.</p>
+            <div class="badge">Siap</div>
+        </a>
+
+        <a href="demo-SiE-MPuS/" class="app-card">
+            <div class="icon-box">🔍</div>
+            <h3>SiE-MPuS</h3>
+            <p>Sistem E-Manajemen Perpustakaan Sekolah.</p>
+            <div class="badge">Siap</div>
+        </a>
+
+        <a href="app-audio/" class="app-card">
+            <div class="icon-box">🎙️</div>
+            <h3>Voice Recorder</h3>
+            <p>Rekam suara dan kirim ke database GAS.</p>
+            <div class="badge">Siap</div>
+        </a>
+
+        <a href="app-map/" class="app-card">
+            <div class="icon-box">📍</div>
+            <h3>Geotagging</h3>
+            <p>Pelacakan koordinat GPS tim lapangan.</p>
+            <div class="badge">Siap</div>
+        </a>
+
+        <a href="app-chat/" class="app-card">
+            <div class="icon-box">💬</div>
+            <h3>Mini Chat</h3>
+            <p>Aplikasi pesan singkat internal.</p>
+            <div class="badge">Demo</div>
+        </a>
+
+        <a href="app-report/" class="app-card">
+            <div class="icon-box">📑</div>
+            <h3>Daily Report</h3>
+            <p>Laporan harian otomatis ke email.</p>
+            <div class="badge">Demo</div>
+        </a>
+    </div>
+
+</body>
+</html>
