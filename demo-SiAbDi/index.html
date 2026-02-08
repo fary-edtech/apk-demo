@@ -1,1 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo SiAbDi</title>
+    <link rel="icon" type="image/png" href="./imgsiabdi.png">
+    <style>
+        /* CSS agar aplikasi memenuhi layar dan ringan */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+        #container {
+            width: 100%;
+            height: 100vh;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
 
+    <div id="container">
+        <iframe 
+            src="" 
+            allow="camera; microphone; geolocation" 
+            sandbox="allow-scripts allow-forms allow-popups allow-same-origin"
+            loading="lazy">
+        </iframe>
+    </div>
+
+</body>
+</html>
