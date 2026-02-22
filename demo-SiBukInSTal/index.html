@@ -713,34 +713,34 @@ async function cetakPDF(nis) {
             <div style="text-align:center; font-weight:bold; text-decoration:underline; font-size:14pt; margin-bottom:20px;">LEMBAR BUKU INDUK SISWA</div>
             <table style="width: 100%; border-collapse: collapse;">
                 <tr><td style="width: 35%; padding: 4px; vertical-align: top;">1. Nama Lengkap</td><td style="width: 2%;">:</td><td style="width: 63%; font-weight: bold;">${s[2]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">2. NIS / NISN</td><td>:</td><td style="font-weight: bold;">${s[0]} / ${s[1]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">3. NIK / No.KK</td><td>:</td><td style="font-weight: bold;">${s[3]} / ${s[4]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">4. TTL</td><td>:</td><td style="font-weight: bold;">${s[5]}, ${s[6]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">5. Jenis Kelamin</td><td>:</td><td style="font-weight: bold;">${s[7] == 'L' ? 'Laki-laki' : 'Perempuan'}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">6. Agama</td><td>:</td><td style="font-weight: bold;">${s[8]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">7. Anak ke </td><td>:</td><td style="font-weight: bold;">${s[9]} dari ${s[10]} bersaudara</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">8. Tinggi/Berat/Goldar</td><td>:</td><td style="font-weight: bold;">${s[16]} cm / ${s[17]} Kg / ${s[18]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">9. Alamat</td><td>:</td><td style="font-weight: bold;">${s[12]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">10. No.HP</td><td>:</td><td style="font-weight: bold;">${s[13]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">11. Nama Ayah/Tgl.Lahir/Pek.</td><td>:</td><td style="font-weight: bold;">${s[20]} / ${s[21] || '-'} (${s[22]})</td></tr> 
-                <tr><td style="padding: 4px; vertical-align: top;">12. Nama Ibu/Tgl.Lahir/Pek.</td><td>:</td><td style="font-weight: bold;">${s[23]} / ${s[24] || '-'} (${s[25]})</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">13. Pindahan/Lulusan dari</td><td>:</td><td style="font-weight: bold;">${s[26]} / ${s[27]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">14. Diterima Tgl</td><td>:</td><td style="font-weight: bold;">${s[30]} di Kelas ${s[29]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">15. Status Akhir</td><td>:</td><td style="font-weight: bold;">${s[31]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">16. Lulus/Keluar Tgl</td><td>:</td><td style="font-weight: bold;">${s[32]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">17. No. Ijazah SLTA</td><td>:</td><td style="font-weight: bold;">${s[34]} </td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">2. NIS / NISN</td><td>:</td><td style="font-weight: bold;">${s[0]} / ${s[1]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">3. NIK / No.KK</td><td>:</td><td style="font-weight: bold;">${s[3]} / ${s[4]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">4. TTL</td><td>:</td><td style="font-weight: bold;">${s[5]}, ${s[6]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">5. Jenis Kelamin</td><td>:</td><td style="font-weight: bold;">${s[7] == 'L' ? 'Laki-laki' : 'Perempuan'}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">6. Agama</td><td>:</td><td style="font-weight: bold;">${s[8]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">7. Anak ke </td><td>:</td><td style="font-weight: bold;">${s[9]} dari ${s[10]} bersaudara</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">8. Tinggi/Berat/Goldar</td><td>:</td><td style="font-weight: bold;">${s[16]} cm / ${s[17]} Kg / ${s[18]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">9. Alamat</td><td>:</td><td style="font-weight: bold;">${s[12]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">10. No.HP</td><td>:</td><td style="font-weight: bold;">${s[13]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">11. Nama Ayah/Tgl.Lahir/Pek.</td><td>:</td><td style="font-weight: bold;">${s[20]} / ${s[21] || '-'} (${s[22]})</td></tr> 
+                <tr><td style="padding: 3px; vertical-align: top;">12. Nama Ibu/Tgl.Lahir/Pek.</td><td>:</td><td style="font-weight: bold;">${s[23]} / ${s[24] || '-'} (${s[25]})</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">13. Pindahan/Lulusan dari</td><td>:</td><td style="font-weight: bold;">${s[26]} / ${s[27]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">14. Diterima Tgl</td><td>:</td><td style="font-weight: bold;">${s[30]} di Kelas ${s[29]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">15. Status Akhir</td><td>:</td><td style="font-weight: bold;">${s[31]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">16. Lulus/Keluar Tgl</td><td>:</td><td style="font-weight: bold;">${s[32]}</td></tr>
+                <tr><td style="padding: 3px; vertical-align: top;">17. No. Ijazah SLTA</td><td>:</td><td style="font-weight: bold;">${s[34]} </td></tr>
             </table>
-            <br>
+        
             <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                 <tr>
                     <td align="center" width="40%"><div>Foto Masuk</div><br>${imgMasuk ? `<img src="${imgMasuk}" style="width: 3cm; height: 4cm; border: 1px solid #000; object-fit: cover;">` : '<div style="width: 3cm; height: 4cm; border: 1px solid #000; line-height:4cm; text-align:center;">Tidak Ada</div>'}</td>
-                    <td align="center" width="20%"></td>
-                    <td align="center" width="40%"><div>Foto Keluar</div><br>${imgKeluar ? `<img src="${imgKeluar}" style="width: 3cm; height: 4cm; border: 1px solid #000; object-fit: cover;">` : '<div style="width: 3cm; height: 4cm; border: 1px solid #000; line-height:4cm; text-align:center;">Tidak Ada</div>'}</td>
+                    <td align="center" width="10%"></td>
+                    <td align="center" width="30%"><div>Foto Keluar</div><br>${imgKeluar ? `<img src="${imgKeluar}" style="width: 3cm; height: 4cm; border: 1px solid #000; object-fit: cover;">` : '<div style="width: 3cm; height: 4cm; border: 1px solid #000; line-height:4cm; text-align:center;">Tidak Ada</div>'}</td>
                 </tr>
             </table>
-            <br><br>
+            <br>
             <div style="float:right; text-align:center; width:40%;">
-                ..........., ${tglSekarang}<br>Kepala Sekolah<br><br><br><br><br>
+                '..............,' ${tglSekarang}<br>Kepala Sekolah,<br><br><br><br><br>
                 <b><u>${globalConf.nama_kepsek || '.......................'}</u></b><br>
                 NIP. ${globalConf.nip_kepsek || '-'}
             </div>
