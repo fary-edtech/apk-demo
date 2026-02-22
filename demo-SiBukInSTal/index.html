@@ -678,32 +678,34 @@ function openTranskrip(nis) {
     }); 
 }
 
-// --- UPDATE: CETAK BIODATA SUPER CEPAT ---
+// ==========================================
+// 1. FUNGSI CETAK BIODATA (SUPER CEPAT & BISA ATUR MARGIN)
+// ==========================================
 async function cetakPDF(nis) { 
     $('#loader').removeClass('hidden'); 
     
-    // 1. Cari data siswa
     const s = globalSiswa.find(x => x[0] == nis);
     if(!s) { $('#loader').addClass('hidden'); return; }
 
-    // 2. Ambil gambar logo dan foto secara paralel (bersamaan agar ngebut)
-    const imgInstansiProm = globalConf.logo_instansi ? callAPI('getImage', {id: globalConf.logo_instansi}) : Promise.resolve('');
-    const imgSekolahProm = globalConf.logo_sekolah ? callAPI('getImage', {id: globalConf.logo_sekolah}) : Promise.resolve('');
+    // TRIK NGEBUT: Ambil Logo langsung dari layar (Tanpa manggil Google Drive lagi!)
+    const imgInstansi = $('#loginLogoInstansi').attr('src') || '';
+    const imgSekolah = $('#loginLogoSekolah').attr('src') || '';
+
+    // Kita HANYA mendownload foto siswa (karena fotonya belum tampil di tabel)
     const imgMasukProm = s[35] ? callAPI('getImage', {id: s[35]}) : Promise.resolve('');
     const imgKeluarProm = s[36] ? callAPI('getImage', {id: s[36]}) : Promise.resolve('');
-    const [imgInstansi, imgSekolah, imgMasuk, imgKeluar] = await Promise.all([imgInstansiProm, imgSekolahProm, imgMasukProm, imgKeluarProm]);
+    const [imgMasuk, imgKeluar] = await Promise.all([imgMasukProm, imgKeluarProm]);
 
     const tglSekarang = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
 
-    // 3. Bangun kerangka HTML persis seperti desain aslinya
     const html = `
-        <div style="font-family: 'Arial', sans-serif; font-size: 11pt; padding: 0px; color: #000; background: #fff;">
+        <div style="font-family: 'Arial', sans-serif; font-size: 11pt; color: #000; background: #fff;">
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td width="15%" align="center">${imgInstansi ? `<img src="${imgInstansi}" style="width: 2.5cm;">` : ''}</td>
                     <td width="70%" style="text-align: center; line-height: 1.2;">
-                        <div style="font-size:13pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_instansi || ''}</div>
-                        <div style="font-size:16pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_sekolah || ''}</div>
+                        <div style="font-size:14pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_instansi || ''}</div>
+                        <div style="font-size:17pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_sekolah || ''}</div>
                         <div style="font-size:9pt;">${globalConf.alamat_sekolah || ''}</div>
                     </td>
                     <td width="15%" align="center">${imgSekolah ? `<img src="${imgSekolah}" style="width: 2.5cm;">` : ''}</td>
@@ -711,66 +713,86 @@ async function cetakPDF(nis) {
             </table>
             <div style="border-bottom: 3px double #000; margin: 10px 0 20px 0;"></div>
             <div style="text-align:center; font-weight:bold; text-decoration:underline; font-size:14pt; margin-bottom:20px;">LEMBAR BUKU INDUK SISWA</div>
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr><td style="width: 35%; padding: 4px; vertical-align: top;">1. Nama Lengkap</td><td style="width: 2%;">:</td><td style="width: 63%; font-weight: bold;">${s[2]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">2. NIS / NISN</td><td>:</td><td style="font-weight: bold;">${s[0]} / ${s[1]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">3. NIK / No.KK</td><td>:</td><td style="font-weight: bold;">${s[3]} / ${s[4]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">4. TTL</td><td>:</td><td style="font-weight: bold;">${s[5]}, ${s[6]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">5. Jenis Kelamin</td><td>:</td><td style="font-weight: bold;">${s[7] == 'L' ? 'Laki-laki' : 'Perempuan'}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">6. Agama</td><td>:</td><td style="font-weight: bold;">${s[8]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">7. Anak ke </td><td>:</td><td style="font-weight: bold;">${s[9]} dari ${s[10]} bersaudara</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">8. Tinggi/Berat/Goldar</td><td>:</td><td style="font-weight: bold;">${s[16]} cm / ${s[17]} Kg / ${s[18]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">9. Alamat</td><td>:</td><td style="font-weight: bold;">${s[12]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">10. No.HP</td><td>:</td><td style="font-weight: bold;">${s[13]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">11. Nama Ayah/Tgl.Lahir/Pek.</td><td>:</td><td style="font-weight: bold;">${s[20]} / ${s[21] || '-'} (${s[22]})</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">12. Nama Ibu/Tgl.Lahir/Pek.</td><td>:</td><td style="font-weight: bold;">${s[23]} / ${s[24] || '-'} (${s[25]})</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">13. Pindahan/Lulusan dari</td><td>:</td><td style="font-weight: bold;">${s[26]} / ${s[27]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">14. Diterima Tgl</td><td>:</td><td style="font-weight: bold;">${s[30]} di Kelas ${s[29]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">15. Status Akhir</td><td>:</td><td style="font-weight: bold;">${s[31]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">16. Lulus/Keluar Tgl</td><td>:</td><td style="font-weight: bold;">${s[32]}</td></tr>
-                <tr><td style="padding: 4px; vertical-align: top;">17. No. Ijazah SLTA</td><td>:</td><td style="font-weight: bold;">${s[34]} </td></tr>
-            </table>
-        
-            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                <tr>
-                    <td align="center" width="40%"><div>Foto Masuk</div><br>${imgMasuk ? `<img src="${imgMasuk}" style="width: 3cm; height: 4cm; border: 1px solid #000; object-fit: cover;">` : '<div style="width: 3cm; height: 4cm; border: 1px solid #000; line-height:4cm; text-align:center;">Tidak Ada</div>'}</td>
-                    
-                    <td align="center" width="30%"><div>Foto Keluar</div><br>${imgKeluar ? `<img src="${imgKeluar}" style="width: 3cm; height: 4cm; border: 1px solid #000; object-fit: cover;">` : '<div style="width: 3cm; height: 4cm; border: 1px solid #000; line-height:4cm; text-align:center;">Tidak Ada</div>'}</td>
-                </tr>
+            <table style="width: 100%; border-collapse: collapse; line-height: 1.5;">
+                <tr><td style="width: 35%; vertical-align: top;">1. Nama Lengkap</td><td style="width: 2%;">:</td><td style="width: 63%; font-weight: bold;">${s[2]}</td></tr>
+                <tr><td style="vertical-align: top;">2. NIS / NISN</td><td>:</td><td style="font-weight: bold;">${s[0]} / ${s[1]}</td></tr>
+                <tr><td style="vertical-align: top;">3. NIK / No.KK</td><td>:</td><td style="font-weight: bold;">${s[3]} / ${s[4]}</td></tr>
+                <tr><td style="vertical-align: top;">4. TTL</td><td>:</td><td style="font-weight: bold;">${s[5]}, ${s[6]}</td></tr>
+                <tr><td style="vertical-align: top;">5. Jenis Kelamin</td><td>:</td><td style="font-weight: bold;">${s[7] == 'L' ? 'Laki-laki' : 'Perempuan'}</td></tr>
+                <tr><td style="vertical-align: top;">6. Agama</td><td>:</td><td style="font-weight: bold;">${s[8]}</td></tr>
+                <tr><td style="vertical-align: top;">7. Anak ke </td><td>:</td><td style="font-weight: bold;">${s[9]} dari ${s[10]} bersaudara</td></tr>
+                <tr><td style="vertical-align: top;">8. Tinggi/Berat/Goldar</td><td>:</td><td style="font-weight: bold;">${s[16]} cm / ${s[17]} Kg / ${s[18]}</td></tr>
+                <tr><td style="vertical-align: top;">9. Alamat</td><td>:</td><td style="font-weight: bold;">${s[12]}</td></tr>
+                <tr><td style="vertical-align: top;">10. No.HP</td><td>:</td><td style="font-weight: bold;">${s[13]}</td></tr>
+                <tr><td style="vertical-align: top;">11. Nama Ayah/Tgl.Lahir/Pek.</td><td>:</td><td style="font-weight: bold;">${s[20]} / ${s[21] || '-'} (${s[22]})</td></tr> 
+                <tr><td style="vertical-align: top;">12. Nama Ibu/Tgl.Lahir/Pek.</td><td>:</td><td style="font-weight: bold;">${s[23]} / ${s[24] || '-'} (${s[25]})</td></tr>
+                <tr><td style="vertical-align: top;">13. Pindahan/Lulusan dari</td><td>:</td><td style="font-weight: bold;">${s[26]} / ${s[27]}</td></tr>
+                <tr><td style="vertical-align: top;">14. Diterima Tgl</td><td>:</td><td style="font-weight: bold;">${s[30]} di Kelas ${s[29]}</td></tr>
+                <tr><td style="vertical-align: top;">15. Status Akhir</td><td>:</td><td style="font-weight: bold;">${s[31]}</td></tr>
+                <tr><td style="vertical-align: top;">16. Lulus/Keluar Tgl</td><td>:</td><td style="font-weight: bold;">${s[32]}</td></tr>
+                <tr><td style="vertical-align: top;">17. No. Ijazah SLTA</td><td>:</td><td style="font-weight: bold;">${s[34]} </td></tr>
             </table>
             <br>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                <tr>
+                    <td align="center" width="25%"><div>Foto Masuk</div><br>${imgMasuk ? `<img src="${imgMasuk}" style="width: 3cm; height: 4cm; border: 1px solid #000; object-fit: cover;">` : '<div style="width: 3cm; height: 4cm; border: 1px solid #000; line-height:4cm; text-align:center;">Tidak Ada</div>'}</td>
+                    
+                    <td align="center" width="25%"><div>Foto Keluar</div><br>${imgKeluar ? `<img src="${imgKeluar}" style="width: 3cm; height: 4cm; border: 1px solid #000; object-fit: cover;">` : '<div style="width: 3cm; height: 4cm; border: 1px solid #000; line-height:4cm; text-align:center;">Tidak Ada</div>'}</td>
+
+                    <td align="center" width="50%"> <div style="float:right; text-align:center; width:40%;">
+                ..........., ${tglSekarang}<br>Kepala Sekolah<br><br><br><br><br>
+                <b><u>${globalConf.nama_kepsek || '.......................'}</u></b><br>
+                NIP. ${globalConf.nip_kepsek || '-'} </div>
+                </tr>
+            </table>
+            <br><br>
             <div style="float:right; text-align:center; width:40%;">
-                ..............,  ${tglSekarang}<br>Kepala Sekolah,<br><br><br><br><br>
+                ..........., ${tglSekarang}<br>Kepala Sekolah<br><br><br><br><br>
                 <b><u>${globalConf.nama_kepsek || '.......................'}</u></b><br>
                 NIP. ${globalConf.nip_kepsek || '-'}
             </div>
         </div>
     `;
 
-    // 4. Proses HTML menjadi PDF
-    var opt = { margin: 0.5, filename: 'Biodata_' + s[2] + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'A4', orientation: 'portrait' } };
+    // --- PENGATURAN MARGIN ADA DI SINI ---
+    // margin: [Atas, Kanan, Bawah, Kiri] (Semua dalam satuan CM)
+    var opt = { 
+        margin: [0.3, 1.5, 1, 1.5], // <--- Silakan ubah angka ini sesuai keinginanmu
+        filename: 'Biodata_' + s[2] + '.pdf', 
+        image: { type: 'jpeg', quality: 0.98 }, 
+        html2canvas: { scale: 2 }, 
+        jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' } 
+    };
+    
     html2pdf().set(opt).from(html).save().then(() => { $('#loader').addClass('hidden'); });
 }
 
-// --- UPDATE: CETAK TRANSKRIP SUPER CEPAT ---
+
+// ==========================================
+// 2. FUNGSI CETAK TRANSKRIP (GARIS TEGAS & SUPER CEPAT)
+// ==========================================
 async function cetakTranskrip() { 
     const nis = $('#tNis').val(); 
-    const namaSiswa = $('#tNamaSiswa').text().split(' (')[0]; // Ambil nama tanpa NIS
+    const namaSiswa = $('#tNamaSiswa').text().split(' (')[0]; 
     $('#loader').removeClass('hidden'); 
 
-    // Trik Cerdas: Ambil langsung data nilai dari tabel yang SEDANG TERBUKA di layar!
-    // Tidak perlu memanggil internet sama sekali.
     const tbodyHtml = $('#tbodyTranskrip').html();
     const tfootHtml = $('#tfootTranskrip').html();
 
-    const imgInstansiProm = globalConf.logo_instansi ? callAPI('getImage', {id: globalConf.logo_instansi}) : Promise.resolve('');
-    const imgSekolahProm = globalConf.logo_sekolah ? callAPI('getImage', {id: globalConf.logo_sekolah}) : Promise.resolve('');
-    const [imgInstansi, imgSekolah] = await Promise.all([imgInstansiProm, imgSekolahProm]);
+    // TRIK NGEBUT: Ambil Logo langsung dari layar
+    const imgInstansi = $('#loginLogoInstansi').attr('src') || '';
+    const imgSekolah = $('#loginLogoSekolah').attr('src') || '';
     
     const tglSekarang = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
 
+    // PERHATIKAN tag <style> di bawah ini, ini yang membuat garis tabelnya muncul jelas!
     const html = `
-        <div style="font-family: 'Arial', sans-serif; font-size: 9pt; padding: 20px; color: #000; background: #fff;">
+        <div style="font-family: 'Arial', sans-serif; font-size: 9pt; color: #000; background: #fff;">
+            <style>
+                .tabel-nilai { width: 100%; border-collapse: collapse; text-align: center; font-size: 9pt; }
+                .tabel-nilai th, .tabel-nilai td { border: 0.5px solid #000 !important; padding: 5px; }
+            </style>
+            
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td width="10%" align="center">${imgInstansi ? `<img src="${imgInstansi}" style="width: 2cm;">` : ''}</td>
@@ -787,20 +809,21 @@ async function cetakTranskrip() {
             <table style="width:100%; margin-bottom:10px; font-size:10pt;">
                 <tr><td width="15%">Nama</td><td>: ${namaSiswa}</td><td width="15%">NIS/NISN</td><td>: ${nis}</td></tr>
             </table>
-            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 8pt;" border="1">
-                 <thead>
-          <tr style="background-color:#eee;">
-            <th rowspan="2" width="3%">No</th><th rowspan="2" width="15%">Mata Pelajaran</th>
-            <th colspan="3">Semester 1</th><th colspan="3">Semester 2</th><th colspan="3">Semester 3</th>
-            <th colspan="3">Semester 4</th><th colspan="3">Semester 5</th><th colspan="3">Semester 6</th>
-          </tr>
-          <tr style="background-color:#eee;">
-            <th>P</th><th>K</th><th>S</th><th>P</th><th>K</th><th>S</th><th>P</th><th>K</th><th>S</th>
-            <th>P</th><th>K</th><th>S</th><th>P</th><th>K</th><th>S</th><th>P</th><th>K</th><th>S</th>
-          </tr>
-        </thead>
+            
+            <table class="tabel-nilai">
+                <thead>
+                    <tr style="background-color:#eee;">
+                        <th rowspan="2" width="15%">Mata Pelajaran</th>
+                        <th colspan="3">Smt 1</th><th colspan="3">Smt 2</th><th colspan="3">Smt 3</th>
+                        <th colspan="3">Smt 4</th><th colspan="3">Smt 5</th><th colspan="3">Smt 6</th>
+                    </tr>
+                    <tr style="background-color:#eee;">
+                        <th>P</th><th>K</th><th>S</th><th>P</th><th>K</th><th>S</th><th>P</th><th>K</th><th>S</th>
+                        <th>P</th><th>K</th><th>S</th><th>P</th><th>K</th><th>S</th><th>P</th><th>K</th><th>S</th>
+                    </tr>
+                </thead>
                 <tbody>${tbodyHtml}</tbody>
-                <tfoot>${tfootHtml}</tfoot>
+                <tfoot style="background-color:#eee; font-weight:bold;">${tfootHtml}</tfoot>
             </table>
             <br>
             <div style="float:right; text-align:center; font-size:10pt; width:30%;">
@@ -810,7 +833,15 @@ async function cetakTranskrip() {
         </div>
     `;
 
-    var opt = { margin: 1, filename: 'Transkrip_' + namaSiswa + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'a4', orientation: 'landscape' } };
+    // --- PENGATURAN MARGIN TRANSKRIP (Landscape) ---
+    var opt = { 
+        margin: [1.5, 1.5, 1.5, 1.5], // [Atas, Kanan, Bawah, Kiri]
+        filename: 'Transkrip_' + namaSiswa + '.pdf', 
+        image: { type: 'jpeg', quality: 0.98 }, 
+        html2canvas: { scale: 2 }, 
+        jsPDF: { unit: 'cm', format: 'a4', orientation: 'landscape' } 
+    };
+    
     html2pdf().set(opt).from(html).save().then(() => { $('#loader').addClass('hidden'); });
 }
 
