@@ -701,7 +701,7 @@ async function cetakPDF(nis) {
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td width="15%" align="center">${imgInstansi ? `<img src="${imgInstansi}" style="width: 2.5cm;">` : ''}</td>
-                    <td width="70%" style="text-align: center; line-height: 1.2;">
+                    <td width="70%" style="text-align: center; line-height: 1;">
                         <div style="font-size:13pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_instansi || ''}</div>
                         <div style="font-size:16pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_sekolah || ''}</div>
                         <div style="font-size:9pt;">${globalConf.alamat_sekolah || ''}</div>
@@ -748,7 +748,7 @@ async function cetakPDF(nis) {
     `;
 
     // 4. Proses HTML menjadi PDF
-    var opt = { margin: 0.3, filename: 'Biodata_' + s[2] + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'Folio', orientation: 'portrait' } };
+    var opt = { margin: 0.3, filename: 'Biodata_' + s[2] + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'cm', format: 'A4', orientation: 'portrait' } };
     html2pdf().set(opt).from(html).save().then(() => { $('#loader').addClass('hidden'); });
 }
 
