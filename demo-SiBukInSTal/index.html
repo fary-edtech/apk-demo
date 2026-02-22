@@ -805,7 +805,7 @@ async function cetakTranskrip() {
             <hr style="border:1px solid #000; margin: 10px 0;">
             <div style="text-align:center; font-weight:bold; margin:10px 0; font-size:12pt;">TRANSKRIP NILAI KOMPREHENSIF</div>
             <table style="width:100%; margin-bottom:10px; font-size:10pt;">
-                <tr><td width="15%">Nama</td><td>: ${namaSiswa}</td><td width="15%">NIS/NISN</td><td>: ${nis} / ${nisn}</td></tr>
+                <tr><td width="15%">Nama</td><td>: ${namaSiswa}</td><td width="15%">NIS/NISN</td><td>: ${nis} / </td></tr>
             </table>
             
             <table class="tabel-nilai">
@@ -825,8 +825,8 @@ async function cetakTranskrip() {
             </table>
             <br>
             <div style="float:right; text-align:center; font-size:10pt; width:40%;">
-               <a> ..................... ,   ${tglSekarang}<br>Kepala Sekolah,</a><br><br><br><br>
-                <b><u>${globalConf.nama_kepsek || '.......................'}</u></b><br>NIP. ${globalConf.nip_kepsek || '-'}
+               <a> ..................... ,   ${tglSekarang}<br>Kepala Sekolah,<br><br><br><br>
+                <b><u>${globalConf.nama_kepsek || '.......................'}</u></b><br>NIP. ${globalConf.nip_kepsek || '-'} </a>
             </div>
         </div>
     `;
@@ -837,7 +837,7 @@ async function cetakTranskrip() {
         filename: 'Transkrip_' + namaSiswa + '.pdf', 
         image: { type: 'jpeg', quality: 0.98 }, 
         html2canvas: { scale: 2 }, 
-        jsPDF: { unit: 'cm', format: 'a4', orientation: 'landscape' } 
+        jsPDF: { unit: 'cm', format: 'A4', orientation: 'landscape' } 
     };
     
     html2pdf().set(opt).from(html).save().then(() => { $('#loader').addClass('hidden'); });
