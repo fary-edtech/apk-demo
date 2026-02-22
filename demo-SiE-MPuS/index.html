@@ -137,7 +137,9 @@
     <div id="login-app" class="d-flex align-items-center justify-content-center vh-100" style="background-size: cover; background-position: center;">
       <div class="card login-card shadow-lg p-0" style="width: 420px; max-width: 90%; position: relative; overflow: visible !important;">
         <div class="floating-logo-container">
-            <img id="login-logo" src="" class="floating-logo" crossorigin="anonymous">
+            <center>
+                <img id="login-logo-center" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgg6bHSnIfgcj_gIqIyF3B20gtgWPAexyj9E75gv1vta7C2Wo6s7BcxzHWig7bQyI3LqAc_D4jjRDnz5pl6B7Ygim7V38sDG5zsFchERdn4jPXedBYuJ9b2LUU0wgTgv883gevvYbhxL62ivaNvwlFgdRU9s_ALNdYzn9y7fHRCWUtHjdjt4vVZpCLVPIIL/s70/Logo%20SiE-MPus.png" style="width:50px" crossorigin="anonymous">
+            </center>
         </div>
         <div class="card-body px-4 pb-4 pt-5 mt-4">
           <div class="text-center mb-4">
@@ -817,7 +819,8 @@ document.getElementById('btnApplyCrop').addEventListener('click', function() {
     if(!cropperInstance) return;
     
     if(currentCropTarget === 'logo') {
-        const canvas = cropperInstance.getCroppedCanvas({ width: 400, height: 400 });
+        // LOGO: Ukuran kecil 150x150 agar data Base64 pendek dan tetap transparan
+        const canvas = cropperInstance.getCroppedCanvas({ width: 150, height: 150 });
         uploadLogoBase64 = canvas.toDataURL('image/png'); 
         document.getElementById('previewLogo').src = uploadLogoBase64; 
         document.getElementById('previewLogo').style.display = 'block';
@@ -928,8 +931,12 @@ function loadAppConfig() {
         if(logoSrc) {
             const l1 = document.getElementById('login-logo');
             const l2 = document.getElementById('sidebar-logo');
-            if(l1) { l1.src = logoSrc; l1.onerror = () => l1.src = 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png'; }
-            if(l2) { l2.src = logoSrc; l2.onerror = () => l2.src = 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png'; }
+            const l3 = document.getElementById('login-logo-center'); // <--- Logo yang di tengah
+            
+            const fallback = 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png';
+            if(l1) { l1.src = logoSrc; l1.onerror = () => l1.src = fallback; }
+            if(l2) { l2.src = logoSrc; l2.onerror = () => l2.src = fallback; }
+            if(l3) { l3.src = logoSrc; l3.onerror = () => l3.src = fallback; } // <--- Update logo tengah
             
             const pLogo = document.getElementById('previewLogo');
             if(pLogo && logoSrc.length > 5) { pLogo.src = logoSrc; pLogo.style.display = 'block'; }
