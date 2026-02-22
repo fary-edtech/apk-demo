@@ -734,8 +734,14 @@
   /* --- MANAJEMEN USER --- */
   function modalUser(m,u,p,r,n) { $('#uMode').val(m); if(m==='add'){ $('#uName').val('').prop('readonly',false);$('#uPass,#uFull').val(''); } else { $('#uOld').val(u); $('#uName').val(u).prop('readonly',true); $('#uPass').val(p); $('#uRole').val(r); $('#uFull').val(n); } new bootstrap.Modal('#modalUser').show(); }
   function submitUser(e) { e.preventDefault(); Swal.showLoading(); apiCall('saveUser', Object.fromEntries(new FormData(e.target))).then(r=>{ if(r.success){ Swal.fire('OK','Disimpan','success'); bootstrap.Modal.getInstance('#modalUser').hide(); loadUsers(); }else Swal.fire('Err',r.message,'error'); }); }
-  function loadUsers() { apiCall('getUsersList').then(r=>{ let h=''; r.forEach(u=>{ h+=`<tr><td>${u[0]}</td><td>******</td><td>${u[2]}</td><td>${u[3]}</td><td><button class="btn btn-sm btn-warning" onclick="modalUser('edit','${u[0]}','${u[1]}','${u[2]}','${u[3]}')" title="Edit"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="delUser('${u[0]}')" title="Hapus"><i class="fas fa-trash"></i></button></td></tr>`; }); $('#tbody-users').html(h); }); }
-  function delUser(u) { if(confirm('Hapus User ini?')) apiCall('deleteUser', {u: u}).then(loadUsers); }
+
+  /*--KHUSUS DEMO DINONAKTIFKAN EDIT DAN HAPUS--*/
+  function loadUsers() { apiCall('getUsersList')
+  .then(r=>{ let h=''; r.forEach(u=>{ h+=`<tr><td>${u[0]}</td><td>******</td><td>${u[2]}</td><td>${u[3]}</td<td>
+  <!-- <button class="btn btn-sm btn-warning" onclick="modalUser('edit','${u[0]}','${u[1]}','${u[2]}','${u[3]}')" title="Edit"><i class="fas fa-edit"></i></button>
+  <button class="btn btn-sm btn-danger" onclick="delUser('${u[0]}')" title="Hapus"><i class="fas fa-trash"></i></button> -->
+  </td></tr>`; }); $('#tbody-users').html(h); }); }
+      
   function modalPrivasi(){ new bootstrap.Modal(document.getElementById('modalPrivasi')).show(); }
 </script>
 
