@@ -698,8 +698,39 @@
   function btnFile(d){ return (!d||d.length<5)?'-':`<a href="${d}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-download"></i></a>`; }
   
   /* ================= EXPORT & CRUD ================= */
-  function downloadPDF(j) { const s=(j==='masuk')?$('#filterM_Start').val():$('#filterK_Start').val(); const e=(j==='masuk')?$('#filterM_End').val():$('#filterK_End').val(); if(!s||!e){Swal.fire('Info','Pilih tanggal','warning');return;} Swal.fire({title:'Memproses PDF...',didOpen:()=>Swal.showLoading()}); apiCall('generateLaporanPDF', {jenis: j, tglAwal: s, tglAkhir: e}).then(r=>{ Swal.close(); if(r.success) window.open(r.url,'_blank'); else Swal.fire('Err',r.message,'error'); }); }
-  function downloadExcel(j) { const s=(j==='masuk')?$('#filterM_Start').val():$('#filterK_Start').val(); const e=(j==='masuk')?$('#filterM_End').val():$('#filterK_End').val(); if(!s||!e){Swal.fire('Info','Pilih tanggal','warning');return;} Swal.fire({title:'Memproses Excel...',didOpen:()=>Swal.showLoading()}); apiCall('generateLaporanExcel', {jenis: j, tglAwal: s, tglAkhir: e}).then(r=>{ Swal.close(); if(r.success) window.open(r.url,'_blank'); else Swal.fire('Err',r.message,'error'); }); }
+  function downloadPDF(j) { 
+    const s=(j==='masuk')?$('#filterM_Start').val():$('#filterK_Start').val(); 
+    const e=(j==='masuk')?$('#filterM_End').val():$('#filterK_End').val(); 
+    
+    if(!s||!e){
+        Swal.fire('Info','Pilih tanggal','warning');
+        return;
+    } 
+    
+    Swal.fire({title:'Menyiapkan Laporan...',didOpen:()=>Swal.showLoading()}); 
+    
+    // Kita panggil jalur API baru yang super cepat
+    apiCall('getLaporanRawHTML', {jenis: j, tglAwal: s, tglAkhir: e}).then(r=>{ 
+        Swal.close(); 
+        if(r.success) {
+            // Buka tab baru di browser
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(r.html);
+            printWindow.document.close();
+            
+            // Tunggu 0.5 detik agar logo selesai dimuat, lalu otomatis buka dialog "Print / Save as PDF"
+            setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
+            }, 500);
+        } else { 
+            Swal.fire('Error', r.message || 'Gagal memuat laporan', 'error'); 
+        } 
+    }).catch(err => {
+        Swal.close();
+        Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+    }); 
+}
   
   function modalInput(j, mode) { 
     $('#fSurat')[0].reset(); $('#fSurat').removeClass('was-validated'); $('#mJenis').val(j); $('#mMode').val(mode); $('#divMasuk,#divKeluar').addClass('hide'); $('#btnSimpan').show(); setBtnLoading('#btnSimpan', false, 'SIMPAN DATA');
@@ -741,7 +772,9 @@
   <!-- <button class="btn btn-sm btn-warning" onclick="modalUser('edit','${u[0]}','${u[1]}','${u[2]}','${u[3]}')" title="Edit"><i class="fas fa-edit"></i></button>
   <button class="btn btn-sm btn-danger" onclick="delUser('${u[0]}')" title="Hapus"><i class="fas fa-trash"></i></button> -->
   </td></tr>`; }); $('#tbody-users').html(h); }); }
-      
+
+  
+  function delUser(u) { if(confirm('Hapus User ini?')) apiCall('deleteUser', {u: u}).then(loadUsers); }
   function modalPrivasi(){ new bootstrap.Modal(document.getElementById('modalPrivasi')).show(); }
 </script>
 
