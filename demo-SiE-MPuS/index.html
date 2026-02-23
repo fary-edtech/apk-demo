@@ -936,6 +936,8 @@ function loadAppConfig() {
         const bgSrc = cfg.UrlBackground;
 
         if(logoSrc) {
+            globalLogoUrl = logoSrc; // KUNCI PERBAIKAN 1: Simpan ke memori global
+            
             const l1 = document.getElementById('login-logo');
             const l2 = document.getElementById('sidebar-logo');
             const l3 = document.getElementById('login-logo-center');
@@ -1558,9 +1560,11 @@ function printLabel(kode, judul) {
 function printCard(id) {
     const m = memberData.find(x => x[0] == id); if (!m) return;
     const nama = m[1]; const jk = m[3] == 'L' ? 'Laki-laki' : 'Perempuan'; const tgl = m[4] ? new Date(m[4]).toLocaleDateString('id-ID') : '-';
-    const sekolah = document.getElementById('sidebar-school-name').innerText || 'Perpus'; const logo = globalLogoUrl || globalLogoBase64;
+    const sekolah = document.getElementById('sidebar-school-name').innerText || 'Perpus'; 
+    const logo = globalLogoUrl || 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png'; // Fallback aman
     
-    const htmlPreview = '<div style="display:flex;justify-content:center;padding:10px;"><div class="id-card-preview" style="width:320px;height:200px;background:#f8f9fa;border:1px solid #ddd;border-radius:15px;overflow:hidden;text-align:left;position:relative;"><div style="background:#4361ee;height:50px;display:flex;align-items:center;padding:0 15px;color:white;"><img src="' + logo + '" style="height:35px;width:35px;background:#fff;border-radius:50%;padding:2px;margin-right:10px;"><div style="font-weight:bold;font-size:13px;">' + sekolah + '</div></div><div style="padding:15px;display:flex;justify-content:space-between;"><div style="flex:1;"><h3 style="margin:0 0 5px;font-size:16px;">' + nama + '</h3><p style="font-size:11px;color:#666;margin:0;">ID: <b>' + id + '</b></p><p style="font-size:11px;color:#666;margin:0;">' + jk + '</p><p style="font-size:11px;color:#666;margin:0;">Lahir: ' + tgl + '</p></div><div id="qrcode-mem"></div></div><div style="position:absolute;bottom:10px;width:100%;text-align:center;font-size:10px;font-weight:bold;color:#4361ee;">KARTU PERPUSTAKAAN DIGITAL</div></div></div>';
+    // KUNCI PERBAIKAN 2: Tambahkan crossorigin="anonymous" di tag img agar tidak diblokir saat dicetak
+    const htmlPreview = '<div style="display:flex;justify-content:center;padding:10px;"><div class="id-card-preview" style="width:320px;height:200px;background:#f8f9fa;border:1px solid #ddd;border-radius:15px;overflow:hidden;text-align:left;position:relative;"><div style="background:#4361ee;height:50px;display:flex;align-items:center;padding:0 15px;color:white;"><img src="' + logo + '" crossorigin="anonymous" style="height:35px;width:35px;background:#fff;border-radius:50%;padding:2px;margin-right:10px;"><div style="font-weight:bold;font-size:13px;">' + sekolah + '</div></div><div style="padding:15px;display:flex;justify-content:space-between;"><div style="flex:1;"><h3 style="margin:0 0 5px;font-size:16px;">' + nama + '</h3><p style="font-size:11px;color:#666;margin:0;">ID: <b>' + id + '</b></p><p style="font-size:11px;color:#666;margin:0;">' + jk + '</p><p style="font-size:11px;color:#666;margin:0;">Lahir: ' + tgl + '</p></div><div id="qrcode-mem"></div></div><div style="position:absolute;bottom:10px;width:100%;text-align:center;font-size:10px;font-weight:bold;color:#4361ee;">KARTU PERPUSTAKAAN DIGITAL</div></div></div>';
     
     Swal.fire({ 
         width: 450, 
@@ -1600,16 +1604,18 @@ function processDownloadLabel(kode, judul) {
 function processDownloadCard(id) {
     const m = memberData.find(x => x[0] == id); if (!m) return;
     const nama = m[1]; const jk = m[3] == 'L' ? 'Laki-laki' : 'Perempuan'; const tgl = m[4] ? new Date(m[4]).toLocaleDateString('id-ID') : '-';
-    const sek = document.getElementById('sidebar-school-name').innerText; const logo = globalLogoUrl || globalLogoBase64;
+    const sek = document.getElementById('sidebar-school-name').innerText || 'Perpus'; 
+    const logo = globalLogoUrl || 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png';
     
     const c = document.createElement('div'); c.style.position='fixed'; c.style.top='-9999px'; 
-    c.innerHTML = '<div id="cap-card" style="width:400px;height:250px;background:#f8f9fa;border:1px solid #ddd;border-radius:15px;overflow:hidden;text-align:left;position:relative;font-family:Arial;"><div style="background:#4361ee;height:60px;display:flex;align-items:center;padding:0 20px;color:white;"><img src="' + logo + '" style="height:45px;width:45px;background:#fff;border-radius:50%;padding:2px;margin-right:15px;"><div style="font-weight:bold;font-size:16px;">' + sek + '</div></div><div style="padding:20px;display:flex;justify-content:space-between;"><div style="flex:1;"><h3 style="margin:0 0 5px;font-size:20px;">' + nama + '</h3><p style="font-size:13px;color:#666;margin:2px 0;">ID: <b>' + id + '</b></p><p style="font-size:13px;color:#666;margin:2px 0;">' + jk + '</p><p style="font-size:13px;color:#666;margin:2px 0;">Lahir: ' + tgl + '</p></div><div id="qr-c-dl"></div></div><div style="position:absolute;bottom:15px;width:100%;text-align:center;font-size:12px;font-weight:bold;color:#4361ee;">KARTU PERPUSTAKAAN DIGITAL</div></div>';
+    c.innerHTML = '<div id="cap-card" style="width:400px;height:250px;background:#f8f9fa;border:1px solid #ddd;border-radius:15px;overflow:hidden;text-align:left;position:relative;font-family:Arial;"><div style="background:#4361ee;height:60px;display:flex;align-items:center;padding:0 20px;color:white;"><img src="' + logo + '" crossorigin="anonymous" style="height:45px;width:45px;background:#fff;border-radius:50%;padding:2px;margin-right:15px;"><div style="font-weight:bold;font-size:16px;">' + sek + '</div></div><div style="padding:20px;display:flex;justify-content:space-between;"><div style="flex:1;"><h3 style="margin:0 0 5px;font-size:20px;">' + nama + '</h3><p style="font-size:13px;color:#666;margin:2px 0;">ID: <b>' + id + '</b></p><p style="font-size:13px;color:#666;margin:2px 0;">' + jk + '</p><p style="font-size:13px;color:#666;margin:2px 0;">Lahir: ' + tgl + '</p></div><div id="qr-c-dl"></div></div><div style="position:absolute;bottom:15px;width:100%;text-align:center;font-size:12px;font-weight:bold;color:#4361ee;">KARTU PERPUSTAKAAN DIGITAL</div></div>';
     document.body.appendChild(c); new QRCode(document.getElementById("qr-c-dl"), { text: id, width: 85, height: 85 });
     
     showSmartLoading('Menyiapkan Kartu...', 'Merender foto dan QR Code...');
     
+    // KUNCI PERBAIKAN 3: Tambahkan allowTaint: true agar gambar dari Google Drive diizinkan
     setTimeout(() => { 
-        html2canvas(document.getElementById('cap-card'), {scale:2, useCORS:true}).then(cv => { 
+        html2canvas(document.getElementById('cap-card'), {scale:2, useCORS:true, allowTaint:true}).then(cv => { 
             document.body.removeChild(c); 
             const img = cv.toDataURL(); 
             Swal.fire({ title: 'Review', imageUrl: img, imageWidth: 400, showCancelButton: true, confirmButtonText: 'Download' }).then(res => { 
