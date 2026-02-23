@@ -371,6 +371,7 @@
   <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   
   <script>
   /* --- KONFIGURASI API (URL DARI GOOGLE APPS SCRIPT) --- */
@@ -487,6 +488,33 @@
       }
   }
 
+  /* --- FUNGSI LOADING DENGAN TIMER MUNDUR --- */
+  function showLoadingTimer(judul) {
+      let timerInterval;
+      Swal.fire({
+          title: judul,
+          html: 'Waktu tunggu: <b>5</b> detik...',
+          allowOutsideClick: false,
+          didOpen: () => {
+              Swal.showLoading();
+              const b = Swal.getHtmlContainer().querySelector('b');
+              let timeLeft = 5;
+              timerInterval = setInterval(() => {
+                  timeLeft--;
+                  if (timeLeft > 0) {
+                      if (b) b.textContent = timeLeft;
+                  } else {
+                      Swal.getHtmlContainer().innerHTML = 'Sedang proses, mohon tunggu sebentar...';
+                      clearInterval(timerInterval);
+                  }
+              }, 1000);
+          },
+          willClose: () => {
+              clearInterval(timerInterval);
+          }
+      });
+  }
+
   function formatNomorUrut(input) { let val = input.value; if(val === "") return; input.value = String(val).padStart(3, '0'); }
 
   /* --- AUTHENTICATION & SESSION --- */
@@ -571,7 +599,7 @@
   }
 
   function simpanSetting(e) { 
-      e.preventDefault(); Swal.fire({title:'Menyimpan...',didOpen:()=>Swal.showLoading()}); 
+      e.preventDefault(); showLoadingTimer('Menyimpan Pengaturan...'); 
       Promise.all([resizeImage(document.getElementById('fLogo1').files[0]), resizeImage(document.getElementById('fLogo2').files[0])]).then(imgs=>{ 
           const fd=new FormData(e.target); const d=Object.fromEntries(fd); 
           if(imgs[0]) d.b64_instansi=imgs[0]; if(imgs[1]) d.b64_sekolah=imgs[1]; 
@@ -609,19 +637,39 @@
   function updateTanggalSurat() { if($('#inpTglSurat').val()) { const tgl = new Date($('#inpTglSurat').val()).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}); const kota = $('#inKotaSurat').val() || "Tempat"; $('#tanggalSuratFull').val(kota + ", " + tgl); } }
   function updateTanggalSaja() { const v=$('#inpTglSaja').val(); if(v){ const d=new Date(v); $('#valHariSaja').val(d.toLocaleDateString('id-ID',{weekday:'long'})); $('#valTglSaja').val(d.toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'})); } }
   function updateHariAcara() { const v=$('#inpTglAcara').val(); if(v){ const d=new Date(v); $('#valHariAcara').val(d.toLocaleDateString('id-ID',{weekday:'long'})); $('#valTglAcaraIndo').val(d.toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'})); } }
+  
+  
   function submitGenerate(e) { 
-      e.preventDefault(); if(!$('#inpTglSurat').val()){Swal.fire('Info','Tgl Surat wajib diisi','warning');return;} 
-      setBtnLoading('#btnGen', true, 'Memproses...'); updatePreview(); updateTanggalSurat(); updateTanggalSaja(); updateHariAcara(); 
-      const fd = new FormData(e.target); const dataObj = Object.fromEntries(fd); 
-      
-      apiCall('generateDokumen', dataObj)
-         .then(r=>{ 
-            setBtnLoading('#btnGen', false, 'GENERATE DOKUMEN'); 
-            if(r.success){ $('#hasilGenerate').removeClass('hide'); $('#linkPdf').attr('href',r.pdfUrl); $('#linkWord').attr('href',r.wordUrl); $('html,body').animate({scrollTop:$("#hasilGenerate").offset().top},500); Swal.fire('Berhasil', 'Dokumen siap diunduh', 'success'); } 
-            else { Swal.fire('Gagal',r.message,'error'); } 
-         })
-         .catch(err => { setBtnLoading('#btnGen', false, 'GENERATE DOKUMEN'); Swal.fire('Error', err.toString(), 'error'); }); 
-  }
+    e.preventDefault(); 
+    if(!$('#inpTglSurat').val()){Swal.fire('Info','Tgl Surat wajib diisi','warning');return;} 
+    
+    setBtnLoading('#btnGen', true, 'Memproses...'); 
+    updatePreview(); updateTanggalSurat(); updateTanggalSaja(); updateHariAcara(); 
+    const fd = new FormData(e.target); const dataObj = Object.fromEntries(fd); 
+    
+    // --- INI BARIS TAMBAHANNYA ---
+    showLoadingTimer('Membuat Dokumen...');
+
+    apiCall('generateDokumen', dataObj)
+       .then(r=>{ 
+          setBtnLoading('#btnGen', false, 'GENERATE DOKUMEN'); 
+          if(r.success){ 
+              $('#hasilGenerate').removeClass('hide'); 
+              $('#linkPdf').attr('href',r.pdfUrl); 
+              $('#linkWord').attr('href',r.wordUrl); 
+              $('html,body').animate({scrollTop:$("#hasilGenerate").offset().top},500); 
+              // Swal berhasil akan menutup pop-up timer otomatis
+              Swal.fire('Berhasil', 'Dokumen siap diunduh', 'success'); 
+          } else { 
+              Swal.fire('Gagal',r.message,'error'); 
+          } 
+       })
+       .catch(err => { 
+           setBtnLoading('#btnGen', false, 'GENERATE DOKUMEN'); 
+           Swal.fire('Error', err.toString(), 'error'); 
+       }); 
+}
+
   function resetGenerator() { $('#formGen')[0].reset(); $('#hasilGenerate').addClass('hide'); $('#selKodeArsip').val('').trigger('change'); const dateNow = new Date(); const offset = dateNow.getTimezoneOffset() * 60000; const today = (new Date(dateNow - offset)).toISOString().slice(0, 10); $('#inpTglSurat').val(today); gantiFormSurat(); updatePreview(); $('html,body').animate({scrollTop:0},500); }
 
   /* --- NAVIGATION & TABLES --- */
@@ -701,36 +749,37 @@
   function downloadPDF(j) { 
     const s=(j==='masuk')?$('#filterM_Start').val():$('#filterK_Start').val(); 
     const e=(j==='masuk')?$('#filterM_End').val():$('#filterK_End').val(); 
+    if(!s||!e){ Swal.fire('Info','Pilih tanggal','warning'); return; } 
     
-    if(!s||!e){
-        Swal.fire('Info','Pilih tanggal','warning');
-        return;
-    } 
+    // Gunakan loading timer baru!
+    showLoadingTimer('Menyiapkan PDF...'); 
     
-    Swal.fire({title:'Menyiapkan Laporan...',didOpen:()=>Swal.showLoading()}); 
-    
-    // Kita panggil jalur API baru yang super cepat
     apiCall('getLaporanRawHTML', {jenis: j, tglAwal: s, tglAkhir: e}).then(r=>{ 
-        Swal.close(); 
         if(r.success) {
-            // Buka tab baru di browser
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(r.html);
-            printWindow.document.close();
+            // Kita proses HTML menjadi PDF secara instan di HP/Laptop pengguna
+            const element = document.createElement('div');
+            element.innerHTML = r.html;
             
-            // Tunggu 0.5 detik agar logo selesai dimuat, lalu otomatis buka dialog "Print / Save as PDF"
-            setTimeout(() => {
-                printWindow.focus();
-                printWindow.print();
-            }, 500);
+            const opt = {
+              margin:       0.5,
+              filename:     'Laporan_Surat_' + j.toUpperCase() + '.pdf',
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2 },
+              jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                Swal.close();
+            });
         } else { 
             Swal.fire('Error', r.message || 'Gagal memuat laporan', 'error'); 
         } 
     }).catch(err => {
-        Swal.close();
         Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
     }); 
 }
+
+ function downloadExcel(j) { const s=(j==='masuk')?$('#filterM_Start').val():$('#filterK_Start').val(); const e=(j==='masuk')?$('#filterM_End').val():$('#filterK_End').val(); if(!s||!e){Swal.fire('Info','Pilih tanggal','warning');return;} showLoadingTimer('Memproses Excel...'); apiCall('generateLaporanExcel', {jenis: j, tglAwal: s, tglAkhir: e}).then(r=>{ Swal.close(); if(r.success) window.open(r.url,'_blank'); else Swal.fire('Err',r.message,'error'); }); }
   
   function modalInput(j, mode) { 
     $('#fSurat')[0].reset(); $('#fSurat').removeClass('was-validated'); $('#mJenis').val(j); $('#mMode').val(mode); $('#divMasuk,#divKeluar').addClass('hide'); $('#btnSimpan').show(); setBtnLoading('#btnSimpan', false, 'SIMPAN DATA');
@@ -744,27 +793,51 @@
   function editSurat(jenis, index) { const row = getDataByIndex(jenis, index); modalInput(jenis, 'edit'); $('#mId').val(row[0]); fillForm(jenis, row); }
   function fillForm(jenis, row) { if(jenis === 'masuk') { $('#inTglTerima').val(row[1]); $('#inPengirim').val(row[2]); $('#inTglSuratM').val(row[3]); $('#inNoSuratM').val(row[4]); $('#inPerihalM').val(row[5]); $('#inTujuanM').val(row[6]); $('#inUraianM').val(row[7]); $('#inKetM').val(row[8]); $('#mFileLama').val(row[9]); } else { $('#inTglSuratK').val(row[1]); $('#inJenisK').val(row[2]); $('#inNoSuratK').val(row[3]); $('#inPerihalK').val(row[4]); $('#inTujuanK').val(row[5]); $('#inUraianK').val(row[6]); $('#inKetK').val(row[7]); $('#mFileLama').val(row[8]); } }
   function delSurat(jenis, index) { const row = getDataByIndex(jenis, index); const id = row[0]; const u = localStorage.getItem('sidimas_user'); const r = localStorage.getItem('sidimas_role'); Swal.fire({ title:'Hapus Data?', text:"Data tidak bisa dikembalikan!", icon:'warning', showCancelButton:true, confirmButtonColor:'#d33', confirmButtonText:'Ya, Hapus' }).then((res)=>{ if(res.isConfirmed) { Swal.showLoading(); apiCall('deleteSurat', {id: id, jenis: jenis, user: u, role: r}).then(resp => { if(resp.success) { Swal.fire('Terhapus','','success'); refreshTable(jenis); refreshAllTables(); } else Swal.fire('Gagal', resp.message, 'error'); }); } }); }
+  
+  
   function submitSurat(e) { 
-    e.preventDefault(); if(!document.getElementById('fSurat').checkValidity()){ e.stopPropagation(); document.getElementById('fSurat').classList.add('was-validated'); return; } 
+    e.preventDefault(); 
+    if(!document.getElementById('fSurat').checkValidity()){ 
+        e.stopPropagation(); document.getElementById('fSurat').classList.add('was-validated'); return; 
+    } 
+    
+    // Loading di tombol tetap berjalan
     setBtnLoading('#btnSimpan', true, 'Menyimpan...'); 
+    
     const j=$('#mJenis').val(); 
     processFile(j==='masuk'?'fileMasuk':'fileKeluar').then(f=>{ 
-        if (document.getElementById(j==='masuk'?'fileMasuk':'fileKeluar').files.length > 0 && f === null) { setBtnLoading('#btnSimpan', false, 'SIMPAN DATA'); return; }
-        const fd = new FormData(e.target); const dataObj = Object.fromEntries(fd); dataObj.currentUser = localStorage.getItem('sidimas_user'); dataObj.currentRole = localStorage.getItem('sidimas_role'); 
+        if (document.getElementById(j==='masuk'?'fileMasuk':'fileKeluar').files.length > 0 && f === null) { 
+            setBtnLoading('#btnSimpan', false, 'SIMPAN DATA'); return; 
+        }
+        const fd = new FormData(e.target); const dataObj = Object.fromEntries(fd); 
+        dataObj.currentUser = localStorage.getItem('sidimas_user'); 
+        dataObj.currentRole = localStorage.getItem('sidimas_role'); 
         
+        // --- INI BARIS TAMBAHANNYA: Memunculkan Pop-up Timer Mundur ---
+        showLoadingTimer('Menyimpan Data...');
+
         apiCall('simpanData', { data: dataObj, fileInfo: f })
            .then(r=>{ 
               setBtnLoading('#btnSimpan', false, 'SIMPAN DATA'); 
-              if(r.success){ Swal.fire('Berhasil','Data tersimpan','success'); bootstrap.Modal.getInstance('#modalSurat').hide(); refreshTable(j); refreshAllTables(); } 
-              else { Swal.fire('Akses Ditolak',r.message,'error'); } 
+              // Notifikasi Swal di bawah ini akan otomatis menggantikan/menutup pop-up timer
+              if(r.success){ 
+                  Swal.fire('Berhasil','Data tersimpan','success'); 
+                  bootstrap.Modal.getInstance('#modalSurat').hide(); 
+                  refreshTable(j); refreshAllTables(); 
+              } else { 
+                  Swal.fire('Akses Ditolak',r.message,'error'); 
+              } 
            })
-           .catch(err => { setBtnLoading('#btnSimpan', false, 'SIMPAN DATA'); Swal.fire('Error Server', err.toString(), 'error'); }); 
+           .catch(err => { 
+               setBtnLoading('#btnSimpan', false, 'SIMPAN DATA'); 
+               Swal.fire('Error Server', err.toString(), 'error'); 
+           }); 
     }); 
-  }
+}
 
   /* --- MANAJEMEN USER --- */
   function modalUser(m,u,p,r,n) { $('#uMode').val(m); if(m==='add'){ $('#uName').val('').prop('readonly',false);$('#uPass,#uFull').val(''); } else { $('#uOld').val(u); $('#uName').val(u).prop('readonly',true); $('#uPass').val(p); $('#uRole').val(r); $('#uFull').val(n); } new bootstrap.Modal('#modalUser').show(); }
-  function submitUser(e) { e.preventDefault(); Swal.showLoading(); apiCall('saveUser', Object.fromEntries(new FormData(e.target))).then(r=>{ if(r.success){ Swal.fire('OK','Disimpan','success'); bootstrap.Modal.getInstance('#modalUser').hide(); loadUsers(); }else Swal.fire('Err',r.message,'error'); }); }
+  function submitUser(e) { e.preventDefault(); showLoadingTimer('Menyimpan User...'); apiCall('saveUser', Object.fromEntries(new FormData(e.target))).then(r=>{ if(r.success){ Swal.fire('OK','Disimpan','success'); bootstrap.Modal.getInstance('#modalUser').hide(); loadUsers(); }else Swal.fire('Err',r.message,'error'); }); }
 
   /*--KHUSUS DEMO DINONAKTIFKAN EDIT DAN HAPUS--*/
   function loadUsers() { apiCall('getUsersList')
