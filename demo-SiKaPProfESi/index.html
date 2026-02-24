@@ -1,43 +1,1230 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <base target="_top">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo SiKaPProfESi</title>
     <link rel="icon" type="image/png" href="./imgsikapprofesi.png">
-    <style>
-        /* CSS agar aplikasi memenuhi layar dan ringan */
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            font-family: sans-serif;
-        }
-        #container {
-            width: 100%;
-            height: 100vh;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
-</head>
-<body>
+  
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<style>
+/* --- PERBAIKAN LOGO BERJEJER (ADMIN) --- */
+.kop-admin-style { background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 25px; text-align: center; border-bottom: 4px solid var(--primary); position: relative; animation: fadeIn 0.5s ease-in; display: block; }
+#img-kop-admin, #img-kop2-admin { height: 75px !important; width: auto !important; object-fit: contain; margin: 0 15px 15px 15px; display: inline-block !important; vertical-align: middle; }
+.kop-text { display: block; margin-top: 5px; }
+.kop-text h5 { margin: 0; font-size: 14px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+.kop-text h3 { margin: 5px 0; font-size: 24px; color: #1e293b; font-weight: 800; text-transform: uppercase; }
+.kop-text p { margin: 0; font-size: 12px; color: var(--primary); font-weight: 500; font-style: italic; }
 
-    <div id="container">
-        <iframe 
-     src="https://script.google.com/macros/s/AKfycbw6oqtjjVaJlgg696nNlKb7YVK13ZmfTb2z_Gc7ct9-jMz65iMlGLoR2ZqpeZVw8Zmg9g/exec" 
-  style="width: 100%; height: 95vh; border: none;"
-   loading="eager"
-  sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-scripts allow-same-origin"
-  allow="camera; microphone; geolocation; clipboard-write; display-capture; publickey-credentials-get"
-  allowfullscreen>
-</iframe>
-    </div>
+/* Style Footer */
+.footer-admin-area, .footer-siswa-area { margin-top: 50px; padding-top: 20px; padding-bottom: 20px; text-align: center; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 11px; width: 100%; }
+.footer-siswa-area { background: #fff; margin-top: 30px; }
+
+/* BASE */
+:root { --primary: #4f46e5; --secondary: #64748b; --success: #16a34a; --warning: #f59e0b; --danger: #dc2626; --light: #f8fafc; --dark: #1e293b; --white: #ffffff; --border: #e2e8f0; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+html { scroll-behavior: smooth; }
+body { background: var(--light); color: var(--dark); font-size: 13px; }
+
+/* COMPONENT */
+.btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; color: white; justify-content: center; transition: 0.2s; }
+.btn.primary { background: var(--primary); } .btn.secondary { background: var(--secondary); }
+.btn.success { background: var(--success); } .btn.danger { background: var(--danger); } .btn.warning { background: var(--warning); color:#000; } .btn.info { background: #0ea5e9; } 
+.btn.sm { font-size: 11px; padding: 5px 10px; } .btn.block { width: 100%; display: flex; } .btn:hover { opacity: 0.9; }
+.btn-group { display: flex; gap: 1px; } .btn-group .btn { border-radius: 0; }
+.btn-group .btn:first-child { border-radius: 4px 0 0 4px; } .btn-group .btn:last-child { border-radius: 0 4px 4px 0; }
+.input-full { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: white; height: 36px; }
+.card { background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 20px; }
+
+/* LAYOUT */
+.page { display: none; min-height: 100vh; } .page.active { display: block; }
+.admin-wrapper { display: grid; grid-template-columns: 240px 1fr; height: 100vh; overflow: hidden; }
+.sidebar { background: #1e1b4b; color: white; display: flex; flex-direction: column; overflow-y: auto; }
+.sidebar-header { padding: 20px; font-weight: bold; font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.nav-menu li { padding: 12px 20px; cursor: pointer; border-left: 3px solid transparent; }
+.nav-menu li.active, .nav-menu li:hover { background: rgba(255,255,255,0.1); border-left-color: var(--primary); }
+.main-content { overflow-y: auto; padding: 20px; }
+.section { display: none; } .section.active { display: block; }
+
+/* DASHBOARD ADMIN */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 15px; }
+.stat-card { color: white; padding: 15px; } .stat-card.blue{background:#3b82f6} .stat-card.green{background:#10b981} .stat-card.red{background:#ef4444}
+.stat-number { font-size: 28px; font-weight: bold; display: block; margin-top: 5px; }
+.stats-detailed-card { padding: 20px; }
+.mini-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.mini-table td, .mini-table th { padding: 8px; border-bottom: 1px solid #f1f5f9; }
+.mini-table th { text-align: left; font-weight: 600; color: #64748b; }
+.mini-table tr:last-child td { border-bottom: none; }
+.bar-container { background: #f1f5f9; border-radius: 4px; overflow: hidden; height: 8px; width: 100px; }
+.bar-fill { height: 100%; background: var(--primary); }
+
+/* TABLE */
+.table-responsive { overflow-x: auto; margin-top: 15px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.data-table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+.data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 12px; }
+.data-table th { background: #f1f5f9; font-weight: 600; text-transform: uppercase; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99; align-items: center; justify-content: center; }
+.modal-box { background: white; width: 90%; max-width: 500px; border-radius: 8px; display: flex; flex-direction: column; max-height: 90vh; position: relative; }
+.modal-box.large { max-width: 900px; }
+.modal-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 2; border-radius: 8px 8px 0 0; }
+.modal-body { padding: 20px; overflow-y: auto; }
+.form-cols { display: grid; grid-template-columns: 180px 1fr; gap: 20px; }
+.col-photo img { width: 100%; height: 220px; object-fit: cover; background: #eee; border:1px solid #ddd; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.grp { margin-bottom: 5px; } .grp label { font-size: 11px; color: #666; font-weight: 500; display: block; margin-bottom: 2px; }
+.full-width { grid-column: 1 / -1; }
+.detail-table { width: 100%; border-collapse: collapse; }
+.detail-table td { padding: 8px; border-bottom: 1px solid #eee; font-size: 13px; }
+.detail-table tr:last-child td { border-bottom: none; }
+
+/* SCROLL TO TOP BUTTON */
+.btn-scroll-top { position: fixed; bottom: 20px; right: 20px; display: none; width: 45px; height: 45px; border-radius: 50%; background: var(--primary); color: white; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 9999; font-size: 18px; align-items: center; justify-content: center; transition: transform 0.3s; }
+.btn-scroll-top:hover { transform: translateY(-5px); background: #4338ca; }
+
+/* --- LOGIN PREMIUM & DYNAMIC GRADIENT --- */
+#login-page.active { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; background: linear-gradient(135deg, var(--primary) 0%, #1e1b4b 100%); overflow: hidden; padding: 20px; }
+.login-background-shape { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%); animation: rotateBg 60s linear infinite; z-index: 1; }
+@keyframes rotateBg { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.login-card-premium { position: relative; z-index: 10; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px; padding: 40px 30px; width: 100%; max-width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; border: 1px solid rgba(255,255,255,0.2); animation: slideUp 0.6s ease-out; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.logo-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+.logo-img-login { height: 60px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+.logo-img-login.hidden { display: none !important; }
+#login-nama-instansi { font-size: 12px; font-weight: 600; letter-spacing: 1px; color: #64748b; margin-bottom: 2px; }
+#login-nama-sekolah { font-size: 20px; font-weight: 800; color: #1e293b; text-transform: uppercase; line-height: 1.2; margin-bottom: 5px; }
+.app-name-login { font-size: 11px; font-weight: 700; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 5px 0; display: inline-block; width: 100%; }
+.input-group-premium { position: relative; margin-bottom: 15px; }
+.input-icon-left { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+.input-icon-right { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; cursor: pointer; transition: 0.2s; z-index: 5; }
+.input-icon-right:hover { color: var(--primary); }
+.input-group-premium input { width: 100%; padding: 12px 40px 12px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: 0.3s; background: #f8fafc; }
+.btn-premium { width: 100%; padding: 12px; background: var(--primary); color: white; font-weight: 600; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); transition: 0.2s; margin-top: 10px; }
+.contact-btn { width: 36px; height: 36px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; text-decoration: none; transition: 0.2s; border: 1px solid #e2e8f0; font-size: 14px; }
+.login-footer { position: relative; z-index: 10; margin-top: 30px; text-align: center; color: rgba(255,255,255,0.6); font-size: 11px; }
+
+/* --- DASHBOARD SISWA PREMIUM STYLE --- */
+.std-header { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px 0; position: sticky; top: 0; z-index: 50; }
+.std-header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+/* Struktur Header Baru yang Stabil */
+.std-brand { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; }
+.header-logo { height: 50px; width: auto; object-fit: contain; }
+.std-titles { text-align: center; flex: 1; padding: 0 10px; }
+.std-titles h3 { font-size: 12px; color: #64748b; font-weight: 600; margin: 0; }
+.std-titles h1 { font-size: 18px; color: #1e293b; font-weight: 800; margin: 2px 0 0 0; text-transform: uppercase; }
+#std-txt-app { font-size: 11px; color: var(--primary); font-weight: 600; margin: 0; letter-spacing: 0.5px; display: block; }
+
+.btn-logout-std { background: #fee2e2; color: #ef4444; border: none; padding: 8px 16px; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; display: flex; align-items: center; gap: 8px; margin-left: 15px; }
+.btn-logout-std:hover { background: #fecaca; }
+
+.std-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+.std-grid { display: grid; grid-template-columns: 350px 1fr; gap: 25px; align-items: start; }
+.std-profile-card { text-align: center; padding: 30px; border-top: 4px solid var(--primary); }
+.std-photo-frame { width: 160px; height: 210px; margin: 0 auto 20px; border: 5px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; border-radius: 8px; background: #f1f5f9; }
+.std-photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+#std-nama-main { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 5px; }
+.badge-nisn { display: inline-block; background: #e0e7ff; color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 15px; }
+.std-status-box { background: #f8fafc; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+.status-active { color: #16a34a; font-weight: 800; }
+.status-inactive { color: #dc2626; font-weight: 800; }
+.std-actions { display: flex; flex-direction: column; gap: 10px; }
+.std-bio-card { padding: 0; overflow: hidden; }
+.card-header-line { background: #f8fafc; padding: 15px 25px; border-bottom: 1px solid #e2e8f0; }
+.card-header-line h3 { font-size: 16px; color: #334155; margin: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.bio-table-responsive { padding: 25px; overflow-x: auto; }
+.bio-table { width: 100%; border-collapse: collapse; }
+.bio-table td { padding: 10px 5px; vertical-align: top; font-size: 14px; border-bottom: 1px solid #f1f5f9; color: #475569; }
+.bio-table .lbl { width: 180px; font-weight: 500; color: #64748b; }
+.bio-table .sep { width: 20px; text-align: center; }
+.bio-table tr:last-child td { border-bottom: none; }
+.bio-table .section-row td { background: #f8fafc; color: var(--primary); font-size: 12px; font-weight: 700; padding: 10px 15px; letter-spacing: 0.5px; border-bottom: none; padding-top: 20px; }
+
+/* --- CARD ID --- */
+.id-card { width: 400px; height: 250px; background: white; position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin: 0 auto; font-family: Arial, sans-serif; }
+.card-bg-gradient { position: absolute; inset: 0; background: linear-gradient(120deg, var(--primary) 35%, #fff 35.5%); z-index: 1; }
+.card-bg-img { position: absolute; inset: 0; background-size: cover; background-position: center; z-index: 2; opacity: 1; }
+.card-content-wrap { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; }
+.card-header-new { position: relative; height: 70px; padding-top: 5px; text-align: center; }
+.logo-kiri { position: absolute; top: 7px; left: 10px; width: 50px; height: 50px; object-fit: contain; }
+.logo-kanan { position: absolute; top: 7px; right: 10px; width: 50px; height: 50px; object-fit: contain; }
+.header-text-center { margin: 0 50px; }
+.txt-instansi-center { font-family: Arial Narrow, sans-serif; font-size: 16px; font-weight: 750; text-transform: uppercase; color: #000; }
+.txt-sekolah-center { font-family: Arial Narrow, sans-serif; font-size: 18px; font-weight: 750; text-transform: uppercase; margin: 1.5px 0; color: #000; }
+.txt-alamat-center { font-family: Arial Narrow, sans-serif; font-size: 9px; font-weight: 150; color: #000; margin-top: 0.5px; }
+.header-line { margin: 0 5px; height: 1px; border-top: 1px solid #000; border-bottom: 2px solid #000; margin-top: 4px; }
+.txt-kartupelajar-center { font-family: Arial, sans-serif; font-size: 18px; text-align: center; font-weight: 800; margin: 2px 0; color: #000; }
+.card-body-new { display: flex; padding: 3px 9px; margin-top: 0px; height: 100%; }
+.photo-area-new { width: 75px; height: 100px; background: #ddd; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-right: 10px; overflow: hidden; }
+.student-photo { width: 100%; height: 100%; object-fit: cover; }
+.info-area-new { flex: 1; position: relative; }
+.info-table-new { width: 100%; color: #000; }
+.info-table-new td { padding: 1px 0px; vertical-align: top; font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 400; line-height: 1; }
+.info-table-new .lbl { width: 60px; }
+.qr-area-new { position: absolute; bottom: 3px; right: 0px; background: white; padding: 3px; border: 0px solid #ccc; }
+#qrcode img { width: 90px; height: 90px; display:block; }
+.loader-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+.spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+div:where(.swal2-container) { font-family: 'Poppins', sans-serif !important; z-index: 99999 !important; }
+
+/* --- BOTTOM NAVIGATION & LOGO MOBILE BASE (WAJIB DI LUAR @MEDIA) --- */
+.bottom-nav { 
+    display: none; position: fixed; bottom: 0; left: 0; right: 0; 
+    background: #ffffff; box-shadow: 0 -2px 10px rgba(0,0,0,0.08); 
+    z-index: 1000; padding-bottom: env(safe-area-inset-bottom);
+}
+.bottom-nav-item { 
+    flex: 1; text-align: center; padding: 12px 0; color: #94a3b8; 
+    font-size: 10px; font-weight: 500; cursor: pointer; 
+    display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.2s; 
+}
+.bottom-nav-item i { font-size: 20px; margin-bottom: 2px; }
+.bottom-nav-item.active, .bottom-nav-item:hover { color: var(--primary); }
+
+/* === RESPONSIVE MOBILE FIX (KHUSUS TAMPILAN HP) === */
+@media (max-width: 768px) {
+    .bottom-nav { display: flex; }
+    
+    /* Tombol Scroll To Top Diperbaiki Posisinya */
+    .btn-scroll-top { bottom: 85px !important; right: 15px !important; z-index: 9999 !important; }
+    
+    /* Sembunyikan elemen khusus PC */
+    .sidebar { display: none !important; }
+    .hide-mobile { display: none !important; }
+    .std-actions { display: none !important; } 
+    .btn-logout-std { display: none !important; }
+
+    /* Modifikasi Layout Admin */
+    .admin-wrapper { display: block; height: auto; overflow: visible; }
+    .main-content { padding: 15px; padding-bottom: 80px; } /* Ruang agar tidak tertutup menu bawah */
+    .form-cols, .grid-3, .grid-2 { grid-template-columns: 1fr; gap: 15px; }
+    .col-photo img { height: 250px; }
+    
+    /* Modifikasi Layout Siswa */
+    .std-container { padding-bottom: 80px; } /* Ruang menu bawah */
+    .std-grid { grid-template-columns: 1fr; gap: 20px; }
+    
+    /* Layout Header Siswa Khusus HP yang Stabil & Muat Teksnya */
+    .std-header-container { padding: 10px; flex-direction: row; justify-content: space-between; align-items: center; }
+    .std-brand { gap: 5px; justify-content: space-between; }
+    .header-logo { height: 35px; width: auto; object-fit: contain; } /* Mengecil proporsional di HP */
+    .std-titles { flex: 1; padding: 0 5px; }
+    .std-titles h3 { font-size: 9px; white-space: normal; }
+    .std-titles h1 { font-size: 13px; line-height: 1.1; margin-bottom: 2px; white-space: normal; }
+    #std-txt-app { font-size: 7.5px !important; line-height: 1.1; white-space: normal; display: block !important; }
+
+    /* Fix elemen lainnya */
+    .kop-admin-style { padding: 15px; }
+    #img-kop-admin, #img-kop2-admin { height: 50px !important; } 
+    .kop-text h3 { font-size: 18px; }
+    .kop-text h5 { font-size: 11px; }
+    .bio-table .lbl { width: 120px; font-size: 12px; }
+    .bio-table td { font-size: 12px; }
+    .login-card-premium { padding: 30px 20px; width: 95%; max-width: 100%; }
+    .logo-img-login { height: 50px; }
+    #login-nama-sekolah { font-size: 18px; }
+    .id-card { transform-origin: left top; transform: scale(0.75); margin-left: 0; margin-bottom: -60px; }
+    #modal-kartu .modal-body { overflow-x: hidden; display: flex; flex-direction: column; align-items: center; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .action-buttons { flex-wrap: wrap; gap: 5px; }
+    .btn-group { flex-wrap: wrap; }
+}
+</style>
+  </head>
+  <body>
+
+    <div id="loader" class="loader-overlay">
+       <div class="spinner"></div>
+       <div class="loading-text" id="loader-text">Memuat Sistem...</div>
+       <div id="loader-countdown" style="font-size: 32px; font-weight: bold; margin-top: 15px; color: var(--primary);">5</div>
     </div>
 
-</body>
+    <div id="app">
+      <div id="login-page" class="page active">
+         <div class="login-background-shape"></div>
+         <div class="login-card-premium">
+            <div class="login-header-premium">
+               <div class="logo-container">
+                   <img id="login-logo-instansi" src="" class="logo-img-login hidden" alt="Logo Instansi">
+                   <img id="login-logo-sekolah" src="" class="logo-img-login hidden" alt="Logo Sekolah">
+               </div>
+               <h4 id="login-nama-instansi">PEMERINTAH</h4>
+               <h2 id="login-nama-sekolah">SEKOLAH</h2>
+               <h5 class="app-name-login">SISTEM KARTU PELAJAR & PROFIL ELEKTRONIK SISWA</h5>
+               <p class="login-subtitle">Silakan masuk ke akun Anda</p>
+            </div>
+            
+            <form onsubmit="handleLogin(event)" class="login-form-premium">
+               <div class="input-group-premium">
+                  <i class="fas fa-user input-icon-left"></i>
+                  <input type="text" id="username" placeholder="Username / NISN" required>
+               </div>
+               <div class="input-group-premium">
+                  <i class="fas fa-lock input-icon-left"></i>
+                  <input type="password" id="password" placeholder="Password" required>
+                  <i class="fas fa-eye input-icon-right" id="toggle-login-pass" onclick="toggleLoginPass()"></i>
+               </div>
+               <button type="submit" class="btn-premium">MASUK SEKARANG</button>
+            </form>
+            
+            <div class="login-marquee-wrap">
+                <marquee id="login-marquee">Selamat Datang di Sistem Kartu Pelajar & Profil Elektronik Siswa (SiKaP ProfESi).</marquee>
+            </div>
+
+            <div class="login-contact-area">
+                <a id="btn-web" href="javascript:void(0)" target="_blank" class="contact-btn" title="Website"><i class="fas fa-globe"></i></a>
+                <a id="btn-wa" href="javascript:void(0)" target="_blank" class="contact-btn" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a id="btn-hp" href="javascript:void(0)" class="contact-btn" title="Telepon"><i class="fas fa-phone"></i></a>
+                <a id="btn-mail" href="javascript:void(0)" class="contact-btn" title="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+         </div>
+        <div class="login-footer">
+          <p>&copy; 2026 SiKaPProfESi | All Rights Reserved.</p>
+          <div style="margin: 5px 0;">
+            <a href="javascript:void(0)" onclick="document.getElementById('modal-privacy').style.display='flex'" style="color: rgba(255,255,255,0.7); font-size: 10px; text-decoration: underline;">
+            Kebijakan Privasi</a> </div>
+            <span class="flex items-center gap-1"> Created by : <a href='https://www.fary-edtech.my.id' target="_blank"><span style="color:white">Fary EdTech</span></a><a style="font-size: 5px;"> - Using Gemini AI</a></span>
+          </div>
+         </div>
+
+      <div id="admin-page" class="page">
+         <div class="admin-wrapper">
+            <aside class="sidebar">
+               <div class="sidebar-header">ADMIN PANEL</div>
+               <ul class="nav-menu">
+                  <li onclick="navAdmin('home')" id="menu-home" class="active"><i class="fas fa-home"></i> Dashboard</li>
+                  <li onclick="navAdmin('data')" id="menu-data"><i class="fas fa-users"></i> Data Siswa</li>
+                  <li onclick="navAdmin('settings')" id="menu-settings"><i class="fas fa-cog"></i> Pengaturan</li>
+                  <li onclick="logout()" class="menu-logout"><i class="fas fa-sign-out-alt"></i> Logout</li>
+               </ul>
+            </aside>
+
+            <main class="main-content">
+            <div id="admin-kop-surat" class="kop-admin-style" style="display:none;">
+               <img id="admin-kop-logo" src="" alt="Logo">
+               <img id="admin-kop2-logo" src="" alt="Logo">
+               <div class="kop-text">
+                  <h5 id="admin-kop-instansi">INSTANSI</h5>
+                  <h3 id="admin-kop-sekolah">SEKOLAH</h3>
+                  <p>SiKaP ProfESi</p>
+               </div>
+            </div>
+
+               <div id="admin-home" class="section active">
+                  <h1 style="display:flex; align-items:center;">Dashboard 
+                      <button onclick="softRefresh('admin-home')" class="btn sm info" style="margin-left:15px; border-radius:50%; width:30px; height:30px; padding:0; box-shadow:0 2px 5px rgba(0,0,0,0.2);" title="Refresh Halaman"><i class="fas fa-sync-alt"></i></button>
+                  </h1>
+                  <div class="stats-grid">
+                     <div class="card stat-card blue"><h3>Total Siswa</h3><span id="stat-total" class="stat-number">0</span></div>
+                     <div class="card stat-card green"><h3>Aktif</h3><span id="stat-aktif" class="stat-number">0</span></div>
+                     <div class="card stat-card red"><h3>Nonaktif</h3><span id="stat-nonaktif" class="stat-number">0</span></div>
+                  </div>
+                  <div id="stats-detailed-grid" style="margin-top:20px; display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+                      <div class="card stats-detailed-card">
+                          <h4 style="margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">Sebaran Kelas</h4>
+                          <div id="stats-kelas-container" style="max-height:250px; overflow-y:auto;"></div>
+                      </div>
+                      <div class="card stats-detailed-card">
+                          <h4 style="margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">Jenis Kelamin</h4>
+                          <div id="stats-gender-container"></div>
+                      </div>
+                  </div>
+               </div>
+
+               <div id="admin-data" class="section">
+                  <div class="section-header">
+                     <h1 style="display:flex; align-items:center;">Data Siswa 
+                        <button onclick="softRefresh('admin-data')" class="btn sm info" style="margin-left:15px; border-radius:50%; width:30px; height:30px; padding:0; box-shadow:0 2px 5px rgba(0,0,0,0.2);" title="Refresh Halaman"><i class="fas fa-sync-alt"></i></button>
+                     </h1>
+                     <div class="action-buttons">
+                        <button onclick="openModalSiswa('add')" class="btn primary"><i class="fas fa-plus"></i> Tambah</button>
+                        <div class="btn-group">
+                            <button onclick="downloadTemplate()" class="btn secondary sm">Template</button>
+                            <button onclick="document.getElementById('file-import').click()" class="btn success sm">Import</button>
+                            <button onclick="exportData()" class="btn warning sm">Export</button>
+                        </div>
+                        <input type="file" id="file-import" hidden onchange="importData(this)" accept=".xlsx">
+                     </div>
+                  </div>
+                  <div class="search-bar">
+                     <input type="text" id="search-input" onkeyup="filterSiswa()" placeholder="Cari Nama / NISN..." class="input-full">
+                  </div>
+                  <div class="table-responsive">
+                     <table class="data-table">
+                        <thead><tr><th>NISN</th><th>Nama</th><th>Kelas</th><th>Password</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody id="tbody-siswa"></tbody>
+                     </table>
+                  </div>
+                  <div class="pagination">
+                     <button onclick="prevPage()" id="btn-prev">Prev</button><span id="page-info">0-0</span><button onclick="nextPage()" id="btn-next">Next</button>
+                  </div>
+               </div>
+
+               <div id="admin-settings" class="section">
+                  <h1 style="display:flex; align-items:center;">Pengaturan 
+                     <button onclick="softRefresh('admin-settings')" class="btn sm info" style="margin-left:15px; border-radius:50%; width:30px; height:30px; padding:0; box-shadow:0 2px 5px rgba(0,0,0,0.2);" title="Refresh Halaman"><i class="fas fa-sync-alt"></i></button>
+                  </h1>
+                  <div class="card form-layout" style="margin-bottom:20px; border-left:4px solid var(--danger);">
+                      <h3 style="margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:5px;">Keamanan Admin</h3>
+                      <form onsubmit="submitAdminAccount(event)">
+                          <div class="grid-2">
+                             <div class="form-group"><label>Username Admin Baru</label><input name="new_username" required class="input-full"></div>
+                             <div class="form-group"><label>Password Admin Baru</label><input name="new_password" required class="input-full"></div>
+                          </div>
+                          <button type="submit" class="btn danger sm">Update Akun Admin</button>
+                      </form>
+                  </div>
+                  <form id="form-setting" onsubmit="submitSettings(event)" class="card form-layout">
+                     <h3 style="margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:5px;">Aplikasi</h3>
+                     <div class="grid-2">
+                        <div class="form-group"><label>Nama Instansi</label><input name="set_instansi" class="input-full"></div>
+                        <div class="form-group"><label>Nama Sekolah</label><input name="set_sekolah" class="input-full"></div>
+                        
+                        <div class="form-group">
+                            <label>Logo Instansi (1:1)</label>
+                            <input type="hidden" name="set_logo_instansi" id="url_logo_instansi">
+                            <input type="hidden" id="b64_logo_instansi">
+                            <div style="display:flex; gap:10px; align-items:flex-start;">
+                                <img id="preview-logo_instansi" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=" style="width:60px; height:60px; object-fit:contain; border:1px solid #ddd; background:#fff;">
+                                <label class="btn secondary sm" style="cursor:pointer;">Upload & Crop
+                                    <input type="file" hidden accept="image/*" onchange="openCropperModal(this, 'logo_instansi', 1)">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Logo Sekolah (1:1)</label>
+                            <input type="hidden" name="set_logo_sekolah" id="url_logo_sekolah">
+                            <input type="hidden" id="b64_logo_sekolah">
+                            <div style="display:flex; gap:10px; align-items:flex-start;">
+                                <img id="preview-logo_sekolah" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=" style="width:60px; height:60px; object-fit:contain; border:1px solid #ddd; background:#fff;">
+                                <label class="btn secondary sm" style="cursor:pointer;">Upload & Crop
+                                    <input type="file" hidden accept="image/*" onchange="openCropperModal(this, 'logo_sekolah', 1)">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group"><label>Alamat Sekolah</label><input name="set_alamat" class="input-full"></div>
+                        <div class="form-group"><label>Running Text</label><input name="set_marquee" class="input-full"></div>
+                        <div class="form-group"><label>Email Sekolah</label><input name="set_email" class="input-full"></div>
+                        <div class="form-group"><label>Website Sekolah</label><input name="set_web" class="input-full"></div>
+                        <div class="form-group"><label>No WhatsApp Admin</label><input name="set_wa" class="input-full"></div>
+                        <div class="form-group"><label>Warna Tema</label><input type="color" name="set_warna" style="width:100%;height:40px"></div>
+                        
+                        <div class="form-group">
+                            <label>Background Kartu Depan (8.5 : 5.5)</label>
+                            <input type="hidden" name="set_bg_kartu" id="url_bg_kartu">
+                            <input type="hidden" id="b64_bg_kartu">
+                            <div style="display:flex; gap:10px; align-items:flex-start;">
+                                <img id="preview-bg_kartu" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=" style="width:85px; height:55px; object-fit:contain; border:1px solid #ddd; background:#fff;">
+                                <label class="btn secondary sm" style="cursor:pointer;">Upload & Crop
+                                    <input type="file" hidden accept="image/*" onchange="openCropperModal(this, 'bg_kartu', 8.5/5.5)">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Background Kartu Belakang (8.5 : 5.5)</label>
+                            <input type="hidden" name="set_bg_belakang" id="url_bg_belakang">
+                            <input type="hidden" id="b64_bg_belakang">
+                            <div style="display:flex; gap:10px; align-items:flex-start;">
+                                <img id="preview-bg_belakang" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=" style="width:85px; height:55px; object-fit:contain; border:1px solid #ddd; background:#fff;">
+                                <label class="btn secondary sm" style="cursor:pointer;">Upload & Crop
+                                    <input type="file" hidden accept="image/*" onchange="openCropperModal(this, 'bg_belakang', 8.5/5.5)">
+                                </label>
+                            </div>
+                        </div>
+
+                     </div>
+                     <button type="submit" class="btn primary block">Simpan Pengaturan Aplikasi</button>
+                  </form>
+               </div>
+               
+            </main>
+            
+            <div class="bottom-nav" id="admin-bottom-nav">
+               <div class="bottom-nav-item active" onclick="navAdmin('home')"><i class="fas fa-home"></i><span>Beranda</span></div>
+               <div class="bottom-nav-item" onclick="navAdmin('data')"><i class="fas fa-users"></i><span>Data Siswa</span></div>
+               <div class="bottom-nav-item" onclick="navAdmin('settings')"><i class="fas fa-cog"></i><span>Pengaturan</span></div>
+               <div class="bottom-nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Keluar</span></div>
+            </div>
+            
+         </div>
+      </div>
+
+      <div id="siswa-page" class="page">
+         <header class="std-header">
+            <div class="std-header-container">
+               <div class="std-brand">
+                  <img id="std-logo-instansi" class="header-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=">
+                  <div class="std-titles">
+                     <h3 id="std-txt-instansi">DINAS PENDIDIKAN</h3>
+                     <h1 id="std-txt-sekolah">NAMA SEKOLAH</h1>
+                     <p id="std-txt-app">SISTEM KARTU PELAJAR & PROFIL ELEKTRONIK SISWA</p>
+                  </div>
+                  <img id="std-logo-sekolah" class="header-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=">
+               </div>
+               <button onclick="logout()" class="btn-logout-std hide-mobile"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+            </div>
+         </header>
+
+         <div class="std-container">
+            <div class="std-grid">
+               <div class="std-left">
+                  <div class="card std-profile-card">
+                     <div class="std-photo-frame">
+                        <img id="std-foto" src="" alt="Foto Siswa">
+                     </div>
+                     <h2 id="std-nama-main">Nama Siswa</h2>
+                     <p id="std-nisn-main" class="badge-nisn">NISN</p>
+                     
+                     <div class="std-status-box">
+                        STATUS: <span id="std-status" class="status-active">AKTIF</span>
+                     </div>
+
+                     <div class="std-actions">
+                        <button onclick="viewCard(null, 'siswa')" class="btn primary block"><i class="fas fa-id-card"></i> Lihat & Unduh Kartu Pelajar</button>
+                        <button onclick="openChangePasswordModal()" class="btn secondary block"><i class="fas fa-key"></i> Ganti Password</button>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="std-right">
+                  <div class="card std-bio-card">
+                     <div class="card-header-line">
+                        <h3>
+                           <span><i class="fas fa-user-graduate"></i> Biodata Lengkap Siswa</span>
+                           <button onclick="softRefresh('siswa')" class="btn sm info" style="border-radius:50%; width:28px; height:28px; padding:0; box-shadow:0 2px 5px rgba(0,0,0,0.2);" title="Refresh Data"><i class="fas fa-sync-alt"></i></button>
+                        </h3>
+                     </div>
+                     <div class="bio-table-responsive">
+                        <table class="bio-table">
+                           <tr><td class="lbl">NISN</td><td class="sep">:</td><td id="b-nisn"></td></tr>
+                           <tr><td class="lbl">NIS</td><td class="sep">:</td><td id="b-nis"></td></tr>
+                           <tr><td class="lbl">Nama Lengkap</td><td class="sep">:</td><td id="b-nama"></td></tr>
+                           <tr><td class="lbl">NIK</td><td class="sep">:</td><td id="b-nik"></td></tr>
+                           <tr><td class="lbl">Jenis Kelamin</td><td class="sep">:</td><td id="b-gender"></td></tr>
+                           <tr><td class="lbl">Tempat Lahir</td><td class="sep">:</td><td id="b-tmp"></td></tr>
+                           <tr><td class="lbl">Tanggal Lahir</td><td class="sep">:</td><td id="b-tgl"></td></tr>
+                           <tr><td class="lbl">Agama</td><td class="sep">:</td><td id="b-agama"></td></tr>
+                           <tr><td class="lbl">Kelas</td><td class="sep">:</td><td id="b-kelas"></td></tr>
+                           <tr><td class="lbl">Jurusan</td><td class="sep">:</td><td id="b-jurusan"></td></tr>
+                           <tr><td class="lbl">Tahun Masuk</td><td class="sep">:</td><td id="b-thn"></td></tr>
+                           <tr class="section-row"><td colspan="3"><strong>DATA ORANG TUA & KONTAK</strong></td></tr>
+                           <tr><td class="lbl">Nama Ayah</td><td class="sep">:</td><td id="b-ayah"></td></tr>
+                           <tr><td class="lbl">Nama Ibu</td><td class="sep">:</td><td id="b-ibu"></td></tr>
+                           <tr><td class="lbl">No. HP / WA</td><td class="sep">:</td><td id="b-hp"></td></tr>
+                           <tr><td class="lbl">Email</td><td class="sep">:</td><td id="b-email"></td></tr>
+                           <tr class="section-row"><td colspan="3"><strong>ALAMAT LENGKAP</strong></td></tr>
+                           <tr><td class="lbl">Alamat Jalan</td><td class="sep">:</td><td id="b-alamat"></td></tr>
+                           <tr><td class="lbl">RT / RW</td><td class="sep">:</td><td id="b-rtrw"></td></tr>
+                           <tr><td class="lbl">Desa / Kelurahan</td><td class="sep">:</td><td id="b-desa"></td></tr>
+                           <tr><td class="lbl">Kecamatan</td><td class="sep">:</td><td id="b-kec"></td></tr>
+                           <tr><td class="lbl">Kabupaten</td><td class="sep">:</td><td id="b-kab"></td></tr>
+                           <tr><td class="lbl">Provinsi</td><td class="sep">:</td><td id="b-prov"></td></tr>
+                           <tr><td class="lbl">Kode Pos</td><td class="sep">:</td><td id="b-pos"></td></tr>
+                        </table>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         
+         <div class="bottom-nav" id="siswa-bottom-nav">
+            <div class="bottom-nav-item active"><i class="fas fa-user"></i><span>Profil</span></div>
+            <div class="bottom-nav-item" onclick="viewCard(null, 'siswa')"><i class="fas fa-id-card"></i><span>Kartu</span></div>
+            <div class="bottom-nav-item" onclick="openChangePasswordModal()"><i class="fas fa-key"></i><span>Password</span></div>
+            <div class="bottom-nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Keluar</span></div>
+         </div>
+         
+      </div>
+    </div>
+
+
+    <div id="modal-cropper" class="modal-overlay" style="z-index: 9999;">
+        <div class="modal-box">
+            <div class="modal-header"><h3 id="cropper-modal-title">Potong Gambar</h3><span onclick="closeModal('modal-cropper')" class="close-btn">&times;</span></div>
+            <div class="modal-body center">
+                <div class="cropper-wrap" style="max-height: 400px; width:100%;"><img id="image-cropper-logo"></div>
+                <button type="button" onclick="doCropLogo()" class="btn success block" style="margin-top:15px">Gunakan Gambar Ini</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-ganti-pass" class="modal-overlay">
+       <div class="modal-box">
+          <div class="modal-header">
+             <h3>Ganti Password</h3>
+             <span onclick="closeModal('modal-ganti-pass')" class="close-btn">&times;</span>
+          </div>
+          <div class="modal-body">
+             <form onsubmit="submitChangePass(event)">
+                <div class="form-group" style="margin-bottom:15px">
+                   <label style="display:block;margin-bottom:5px">Password Lama</label>
+                   <input type="password" name="old_pass" required class="input-full" placeholder="Masukkan Password Saat Ini">
+                </div>
+                <div class="form-group" style="margin-bottom:15px">
+                   <label style="display:block;margin-bottom:5px">Password Baru</label>
+                   <input type="password" name="new_pass" required class="input-full" placeholder="Password Baru">
+                </div>
+                <button type="submit" class="btn primary block">SIMPAN PASSWORD BARU</button>
+             </form>
+          </div>
+       </div>
+    </div>
+
+    <div id="modal-detail" class="modal-overlay">
+       <div class="modal-box large">
+          <div class="modal-header">
+             <h3>Detail Data Siswa</h3>
+             <span onclick="closeModal('modal-detail')" class="close-btn">&times;</span>
+          </div>
+          <div class="modal-body">
+             <div class="form-cols">
+                 <div class="col-photo">
+                    <img id="detail-foto" src="" style="width:100%; height:200px; object-fit:cover; border:1px solid #ddd; background:#eee">
+                    <div style="margin-top:10px; padding:10px; background:#f8d7da; border-radius:4px; text-align:center">
+                        <h4 style="color:#721c24; margin-bottom:5px">Reset Password</h4>
+                        <input type="text" id="reset-pass-input" placeholder="Password Baru" class="input-full" style="text-align:center; font-weight:bold">
+                        <button onclick="triggerResetPassword()" class="btn danger block sm" style="margin-top:5px">SIMPAN PASSWORD BARU</button>
+                    </div>
+                 </div>
+                 <div class="col-data">
+                    <table class="detail-table">
+                        <tr><td width="30%">NISN</td><td width="2%">:</td><td id="det-nisn"></td></tr>
+                        <tr><td>Nama</td><td>:</td><td id="det-nama"></td></tr>
+                        <tr><td>Kelas</td><td>:</td><td id="det-kelas"></td></tr>
+                        <tr><td>Jurusan</td><td>:</td><td id="det-jurusan"></td></tr>
+                        <tr><td>TTL</td><td>:</td><td id="det-ttl"></td></tr>
+                        <tr><td>Gender</td><td>:</td><td id="det-gender"></td></tr>
+                        <tr><td>Agama</td><td>:</td><td id="det-agama"></td></tr>
+                        <tr><td>Nama Ayah</td><td>:</td><td id="det-ayah"></td></tr>
+                        <tr><td>Nama Ibu</td><td>:</td><td id="det-ibu"></td></tr>
+                        <tr><td>Alamat</td><td>:</td><td id="det-alamat"></td></tr>
+                        <tr><td>No HP</td><td>:</td><td id="det-hp"></td></tr>
+                        <tr><td>Status</td><td>:</td><td id="det-status" style="font-weight:bold"></td></tr>
+                    </table>
+                    <input type="hidden" id="detail-row-id">
+                 </div>
+             </div>
+          </div>
+       </div>
+    </div>
+
+    <div id="modal-siswa" class="modal-overlay">
+       <div class="modal-box large">
+          <div class="modal-header"><h3 id="modal-title">Form Siswa</h3><span onclick="closeModal('modal-siswa')" class="close-btn">&times;</span></div>
+          <div class="modal-body">
+             <form id="form-siswa" onsubmit="submitSiswa(event)">
+                <input type="hidden" name="mode" id="form-mode"><input type="hidden" name="rowId">
+                <input type="hidden" name="oldFotoId"><input type="hidden" name="oldFotoUrl">
+                <input type="hidden" id="final-foto-base64">
+
+                <div class="form-cols">
+                   <div class="col-photo">
+                      <img id="preview-final" src="">
+                      <label class="btn secondary sm block" style="margin-top:5px; text-align:center">Pilih Foto
+                          <input type="file" hidden accept="image/*" onchange="initCropper(this)">
+                      </label>
+                      <div class="cropper-wrap"><img id="image-cropper"></div>
+                      <button type="button" onclick="doCrop()" class="btn success sm block" style="margin-top:5px">Potong</button>
+                   </div>
+                   <div class="col-data">
+                      <div class="grid-3">
+                         <div class="grp"><label>NISN *</label><input name="nisn" required class="input-full"></div>
+                         <div class="grp"><label>NIS</label><input name="nis" class="input-full"></div>
+                         <div class="grp"><label>Nama Lengkap *</label><input name="nama" required class="input-full"></div>
+                         <div class="grp"><label>NIK</label><input name="nik" class="input-full"></div>
+                         <div class="grp"><label>Tempat Lahir</label><input name="tmp_lahir" class="input-full"></div>
+                         <div class="grp"><label>Tgl Lahir</label><input type="date" name="tgl_lahir" class="input-full"></div>
+                         <div class="grp"><label>Gender</label><select name="gender" class="input-full"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div>
+                         <div class="grp"><label>Agama</label><select name="agama" class="input-full"><option value="Islam">Islam</option><option value="Kristen">Kristen</option><option value="Katolik">Katolik</option><option value="Hindu">Hindu</option><option value="Buddha">Buddha</option></select></div>
+                         <div class="grp"><label>Kelas</label><input name="kelas" class="input-full"></div>
+                         <div class="grp"><label>Jurusan</label><input name="jurusan" class="input-full"></div>
+                         <div class="grp"><label>Tahun Masuk</label><input name="thn_masuk" class="input-full"></div>
+                         <div class="grp"><label>Status</label><select name="status" class="input-full"><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option><option value="Lulus">Lulus</option></select></div>
+                         <div class="grp"><label>Masa Berlaku</label><input name="masa_berlaku" class="input-full"></div>
+                         <div class="grp"><label>Password Login</label><input name="password" class="input-full"></div>
+                         <div class="grp"><label>Nama Ayah</label><input name="ayah" class="input-full"></div>
+                         <div class="grp"><label>Nama Ibu</label><input name="ibu" class="input-full"></div>
+                         <div class="grp"><label>No HP/WA</label><input name="nohp" class="input-full"></div>
+                         <div class="grp"><label>Email</label><input name="email" class="input-full"></div>
+                         <div class="grp full-width"><label>Alamat Jalan</label><input name="alamat" class="input-full"></div>
+                         <div class="grp"><label>RT / RW</label><input name="rtrw" class="input-full"></div>
+                         <div class="grp"><label>Desa/Kel</label><input name="desa" class="input-full"></div>
+                         <div class="grp"><label>Kecamatan</label><input name="kecamatan" class="input-full"></div>
+                         <div class="grp"><label>Kabupaten</label><input name="kabupaten" class="input-full"></div>
+                         <div class="grp"><label>Provinsi</label><input name="provinsi" class="input-full"></div>
+                         <div class="grp"><label>Kode Pos</label><input name="kodepos" class="input-full"></div>
+                      </div>
+                   </div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn primary block">Simpan Data Siswa</button></div>
+             </form>
+          </div>
+       </div>
+    </div>
+
+
+    <div id="modal-kartu" class="modal-overlay">
+       <div class="modal-box">
+          <div class="modal-header"><h3>Preview Kartu</h3><span onclick="closeModal('modal-kartu')" class="close-btn">&times;</span></div>
+          <div class="modal-body center">
+             <div id="loading-card" style="padding: 20px;">
+                 Sedang Memproses Gambar...
+                 <div id="card-countdown" style="font-size:32px; font-weight:bold; color:var(--primary); margin-top:10px;">10</div>
+             </div>
+             
+             <div id="capture-area" class="id-card">
+                <div class="card-bg-img" id="card-bg-layer"></div>
+                <div class="card-bg-gradient"></div>
+                
+                <div class="card-content-wrap">
+                    <div class="card-header-new">
+                       <img id="card-logo-instansi" class="logo-kiri" crossorigin="anonymous">
+                       <img id="card-logo-sekolah" class="logo-kanan" crossorigin="anonymous">
+                       
+                       <div class="header-text-center">
+                          <div id="card-instansi" class="txt-instansi-center"></div>
+                          <div id="card-sekolah" class="txt-sekolah-center"></div>
+                          <div id="card-alamat-sek" class="txt-alamat-center"></div>
+                       </div>
+                    </div>
+                    <div class="header-line"></div>
+                    <div class="header-text-center">
+                        <div class="txt-kartupelajar-center">KARTU PELAJAR</div>
+                      </div>
+                    <div class="card-body-new">
+                       <div class="photo-area-new">
+                          <img id="card-foto" class="student-photo" crossorigin="anonymous">
+                       </div>
+                       <div class="info-area-new">
+                          <table class="info-table-new">
+                             <tr><td class="lbl">Nama</td><td>:</td><td class="val" id="card-nama"></td></tr>
+                             <tr><td class="lbl">NISN</td><td>:</td><td class="val" id="card-nisn"></td></tr>
+                             <tr><td class="lbl">Tmpt Lahir</td><td>:</td><td class="val" id="card-tmp"></td></tr>
+                             <tr><td class="lbl">Tgl Lahir</td><td>:</td><td class="val" id="card-tgl"></td></tr>
+                             <tr><td class="lbl">JK</td><td>:</td><td class="val" id="card-jk"></td></tr>
+                          </table>
+                          <div class="qr-area-new"><div id="qrcode"></div></div>
+                       </div>
+                    </div>
+                </div>
+             </div>
+             
+             <div id="card-back-wrap" style="height:0; overflow:hidden; margin-top:10px;">
+                 <div id="capture-area-back" class="id-card">
+                     <img id="card-bg-back" style="width:100%; height:100%; object-fit:cover;">
+                 </div>
+             </div>
+             
+             <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+                 <button onclick="downloadPNG()" class="btn primary block">DOWNLOAD KARTU PELAJAR (DEPAN)</button>
+                 <button onclick="downloadBack()" class="btn info block">DOWNLOAD KARTU (BELAKANG)</button>
+             </div>
+          </div>
+       </div>
+    </div>
+
+
+    <div id="modal-privacy" class="modal-overlay" style="display: none;">
+    <div class="modal-box large">
+        <div class="modal-header">
+            <h3>Kebijakan Privasi</h3>
+            <span onclick="document.getElementById('modal-privacy').style.display='none'" class="close-btn">&times;</span>
+        </div>
+        <div class="modal-body" style="text-align: left; max-height: 60vh; overflow-y: auto; padding: 20px; line-height: 1.6;">
+            <h4>1. Pendahuluan</h4>
+            <p>Selamat datang di Aplikasi SiKaPProfESi (Sistem Kartu Pelajar & Profil Elektronik Siswa). <br>Kami menghargai privasi Anda. Kebijakan ini menjelaskan bagaimana data siswa dikelola dalam aplikasi SiKaP ProfESi.</p>
+            <h4>2. Pengumpulan Data</h4>
+            <p>Data yang dikumpulkan meliputi NISN, Nama, Kelas, Foto, dan data demografis siswa lainnya untuk keperluan administrasi sekolah.</p>
+            <h4>3. Penggunaan Data</h4>
+            <p>Data hanya digunakan untuk keperluan pembuatan Kartu Pelajar, Profil Elektronik, dan manajemen data internal sekolah.</p>
+            <h4>4. Keamanan</h4>
+            <p>Kami berupaya menjaga keamanan data Anda dengan akses terbatas hanya untuk Admin dan Siswa yang bersangkutan.</p>
+            <br>
+            <p style="font-size: 0.9em; color: #666;">Terakhir diperbarui: 2026</p>
+        </div>
+    </div>
+  </div>
+
+<button type="button" class="btn-scroll-top" id="btn-back-to-top" onclick="scrollToTop()">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+   
+   
+<script>
+// ==========================================
+// 1. KONFIGURASI API (WAJIB DIGANTI)
+// ==========================================
+const SCRIPT_URL = "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbzvR2EmYFq4tUJ-gXepAy1hyplz_i1Juuxp2kB5iZtOidMvJO3IQBgXJW4Zq_T-j6SN/exec";
+
+// Helper function untuk menggantikan google.script.run
+function apiCall(action, data, onSuccess) {
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: action, data: data }),
+        headers: { "Content-Type": "text/plain;charset=utf-8" }
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (onSuccess) onSuccess(result);
+    })
+    .catch(error => {
+        console.error("API Error pada " + action + ":", error);
+        hideLoader();
+        Swal.fire('Error Koneksi', 'Gagal terhubung ke server database.', 'error');
+    });
+}
+// ==========================================
+
+var DEFAULT_IMG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
+var settings = {}, allSiswa = [], currentUser = null, cropper = null, cropperLogo = null;
+var currentPage = 1, limit = 10, totalData = 0, currentSearch = ""; 
+var EXCEL_KEYS = ["NISN","Password","NIS","Nama","Tempat_Lahir","Tanggal_Lahir","NIK","Gender","Agama","Ayah","Ibu","Provinsi","Kabupaten","Kecamatan","Desa","RT_RW","Alamat","Kode_Pos","No_HP","Email","Kelas","Jurusan","Tahun_Masuk","Status","Masa_Berlaku"];
+
+// === FUNGSI GLOBAL LOADER COUNTDOWN ===
+var loaderInterval;
+function showLoader(msg, customTime) {
+   var loader = document.getElementById('loader');
+   loader.style.display = 'flex';
+   if(msg) document.getElementById('loader-text').innerText = msg;
+   
+   var cd = document.getElementById('loader-countdown');
+   var count = customTime ? customTime : 5; 
+   cd.style.fontSize = "32px"; cd.innerText = count;
+   
+   if(loaderInterval) clearInterval(loaderInterval);
+   loaderInterval = setInterval(function() {
+       count--;
+       if(count > 0) { cd.innerText = count; } 
+       else { cd.style.fontSize = "18px"; cd.innerText = "On process..."; }
+   }, 1000);
+}
+function hideLoader() { document.getElementById('loader').style.display = 'none'; if(loaderInterval) clearInterval(loaderInterval); }
+
+// --- FUNGSI REFRESH AJAX ---
+function softRefresh(context) {
+    if(context === 'admin-home') {
+        updateStats();
+    } else if(context === 'admin-data') {
+        loadSiswa(true, 'Memuat Ulang Data Siswa...');
+    } else if(context === 'admin-settings') {
+        showLoader('Memuat Pengaturan...', 5);
+        apiCall('getAppSettings', {}, res => { 
+            settings = res; updateUITheme(); renderDynamicElements(); loadSettings(); hideLoader(); 
+            const Toast = Swal.mixin({toast: true, position: 'top-end', showConfirmButton: false, timer: 2000}); Toast.fire({icon: 'success', title: 'Diperbarui'});
+        });
+    } else if(context === 'siswa') {
+        showLoader('Memperbarui Profil...', 5);
+        apiCall('getAppSettings', {}, res => { 
+            settings = res; updateUITheme(); renderDynamicElements(); renderSiswaPage(currentUser); hideLoader(); 
+            const Toast = Swal.mixin({toast: true, position: 'top-end', showConfirmButton: false, timer: 2000}); Toast.fire({icon: 'success', title: 'Data Diperbarui'});
+        });
+    }
+}
+
+window.onload = function() {
+   window.onscroll = function() { scrollFunction() };
+   showLoader('Memuat Sistem Aplikasi...', 5);
+   var storedUser = localStorage.getItem('sis_user');
+   var storedRole = localStorage.getItem('sis_role');
+   if(storedUser && storedRole) {
+       currentUser = JSON.parse(storedUser);
+   }
+   
+   apiCall('getAppSettings', {}, res => {
+       settings = res; 
+       updateUITheme(); 
+       renderDynamicElements(); 
+       
+       if(currentUser) {
+           if(localStorage.getItem('sis_role') === 'admin') { 
+               showPage('admin-page'); navAdmin('home'); 
+           } else { 
+               showPage('siswa-page'); renderSiswaPage(currentUser); navSiswa('profil'); 
+           }
+       } else {
+           showPage('login-page');
+       }
+       hideLoader();
+   });
+};
+
+function scrollFunction() { var btn = document.getElementById("btn-back-to-top"); if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) btn.style.display = "flex"; else btn.style.display = "none"; }
+function scrollToTop() { document.body.scrollTop = 0; document.documentElement.scrollTop = 0; }
+
+function updateUITheme() {
+   if(settings.Warna_Tema) document.documentElement.style.setProperty('--primary', settings.Warna_Tema);
+   var loginPage = document.getElementById('login-page');
+   if(loginPage) loginPage.style.background = `linear-gradient(135deg, var(--primary) 0%, #0f172a 100%)`;
+   setTxt('login-nama-instansi', settings.Nama_Instansi); setTxt('login-nama-sekolah', settings.Nama_Sekolah); setTxt('login-marquee', settings.Running_Text);
+   setupBtn('btn-web', settings.Web_Sekolah, (v)=>v.startsWith('http')?v:'http://'+v);
+   setupBtn('btn-wa', settings.No_WA, (v)=>"https://wa.me/"+v.replace(/\D/g,'').replace(/^0/,'62'));
+   setupBtn('btn-hp', settings.No_WA, (v)=>"tel:"+v);
+   setupBtn('btn-mail', settings.Email_Sekolah, (v)=>"mailto:"+v);
+   if(settings.Logo_Instansi) apiCall('getBase64FromUrl', {url: settings.Logo_Instansi}, u=>{if(u.length>100){document.getElementById('login-logo-instansi').src=u;document.getElementById('login-logo-instansi').classList.remove('hidden');}});
+   if(settings.Logo_Sekolah) apiCall('getBase64FromUrl', {url: settings.Logo_Sekolah}, u=>{if(u.length>100){document.getElementById('login-logo-sekolah').src=u;document.getElementById('login-logo-sekolah').classList.remove('hidden');}});
+}
+
+function renderDynamicElements() {
+    var year = new Date().getFullYear(), namaInstansi = settings.Nama_Instansi || "PEMERINTAH", namaSekolah = settings.Nama_Sekolah || "SEKOLAH";
+    var adminHome = document.getElementById('admin-home');
+    if(adminHome) {
+        var oldKop = document.getElementById('dynamic-kop-admin'); if(oldKop) oldKop.remove();
+        var oldFoot = document.getElementById('dynamic-footer-admin'); if(oldFoot) oldFoot.remove();
+        adminHome.insertAdjacentHTML('afterbegin', `<div id="dynamic-kop-admin" class="kop-admin-style"><img id="img-kop-admin" src="${DEFAULT_IMG}" style="display:none;"><img id="img-kop2-admin" src="${DEFAULT_IMG}" style="display:none;"><div class="kop-text"><h5>${namaInstansi}</h5><h3>${namaSekolah}</h3><p><i>Sistem Kartu Pelajar & Profil Elektronik Siswa (SiKaP ProfESi)</i></p></div></div>`);
+        adminHome.insertAdjacentHTML('beforeend', `<div id="dynamic-footer-admin" class="footer-admin-area">&copy; ${year} SiKaP ProfESi <b>${namaSekolah}</b>. | Created by: Fary EdTech</div>`);
+        if(settings.Logo_Instansi) apiCall('getBase64FromUrl', {url: settings.Logo_Instansi}, url => { var img=document.getElementById('img-kop-admin'); if(img&&url.length>100){img.src=url;img.style.display='inline-block';} });
+        if(settings.Logo_Sekolah) apiCall('getBase64FromUrl', {url: settings.Logo_Sekolah}, url => { var img=document.getElementById('img-kop2-admin'); if(img&&url.length>100){img.src=url;img.style.display='inline-block';} });
+    }
+    var siswaContainer = document.querySelector('.std-container');
+    if(siswaContainer) {
+        var oldFootS = document.getElementById('dynamic-footer-siswa'); if(oldFootS) oldFootS.remove();
+        siswaContainer.insertAdjacentHTML('beforeend', `<div id="dynamic-footer-siswa" class="footer-siswa-area">&copy; ${year} <b>${namaSekolah}</b><br>Created by Fary EdTech</div>`);
+    }
+}
+
+function setupBtn(id, val, formatFunc) { var el=document.getElementById(id); if(val&&val.length>3){el.href=formatFunc(val); el.style.display='inline-flex';} else el.style.display='none'; }
+function toggleLoginPass() { var p=document.getElementById('password'),i=document.getElementById('toggle-login-pass'); if(p.type==='password'){p.type='text';i.className='fas fa-eye-slash input-icon-right';}else{p.type='password';i.className='fas fa-eye input-icon-right';} }
+
+function loadSiswa(resetPage, customMsg) {
+   if(resetPage) currentPage = 1; 
+   showLoader(customMsg || 'Memuat Data Siswa...', 5); 
+   apiCall('getSiswaPaging', {page: currentPage, limit: limit, search: currentSearch}, res => { 
+      allSiswa = res.data; totalData = res.total; renderTable(); updateStatsUI(res.stats); hideLoader(); 
+   });
+}
+
+function renderTable() {
+   var tbody = document.getElementById('tbody-siswa'); tbody.innerHTML = "";
+   allSiswa.forEach(s => {
+      var badge = s.status === 'Aktif' ? 'color:green' : 'color:red';
+      tbody.innerHTML += `<tr><td>${s.nisn}</td><td>${s.nama}</td><td>${s.kelas}</td><td><span style="background:#eee;color:#888;padding:2px 5px;border-radius:4px;font-size:10px;"><i class="fas fa-lock"></i> Terenkripsi</span></td><td style="${badge};font-weight:bold">${s.status}</td><td><button onclick="viewDetail(${s.row})" class="btn sm info"><i class="fas fa-eye"></i></button> <button onclick="viewCard(${s.row}, 'admin')" class="btn sm success"><i class="fas fa-id-card"></i></button> <button onclick="editSiswa(${s.row})" class="btn sm secondary"><i class="fas fa-edit"></i></button> <button onclick="hapusSiswa(${s.row})" class="btn sm danger"><i class="fas fa-trash"></i></button></td></tr>`;
+   });
+   var start = (currentPage-1)*limit + 1, end = start + allSiswa.length - 1; if(totalData === 0) { start = 0; end = 0; }
+   document.getElementById('page-info').innerText = `${start}-${end} dari ${totalData}`; document.getElementById('btn-prev').disabled = currentPage === 1; document.getElementById('btn-next').disabled = end >= totalData;
+}
+
+function prevPage(){ if(currentPage>1){ currentPage--; loadSiswa(false); } } 
+function nextPage(){ if((currentPage*limit) < totalData){ currentPage++; loadSiswa(false); } } 
+function filterSiswa(){ currentSearch = document.getElementById('search-input').value; if(this.timer) clearTimeout(this.timer); this.timer = setTimeout(() => { loadSiswa(true); }, 500); }
+
+function updateStats() { loadSiswa(true, 'Memuat Dashboard...'); }
+
+function updateStatsUI(stats) {
+    if(!stats) return; setTxt('stat-total', stats.total); setTxt('stat-aktif', stats.active); setTxt('stat-nonaktif', stats.nonactive);
+    var kelasHTML = '<table class="mini-table">'; var sortedKeys = Object.keys(stats.classes).sort();
+    sortedKeys.forEach(k => { var pct = stats.total > 0 ? Math.round((stats.classes[k] / stats.total) * 100) : 0; kelasHTML += `<tr><td width="40%">${k}</td><td width="20%"><b>${stats.classes[k]}</b></td><td><div class="bar-container"><div class="bar-fill" style="width:${pct}%"></div></div></td></tr>`; });
+    document.getElementById('stats-kelas-container').innerHTML = kelasHTML + '</table>';
+    document.getElementById('stats-gender-container').innerHTML = `<div style="display:flex; justify-content:space-around; text-align:center; padding:15px;"><div><div style="font-size:24px; color:#3b82f6; margin-bottom:5px;"><i class="fas fa-male"></i> ${stats.gender.L}</div><div style="font-size:12px; color:#64748b">Laki-laki</div></div><div><div style="font-size:24px; color:#ec4899; margin-bottom:5px;"><i class="fas fa-female"></i> ${stats.gender.P}</div><div style="font-size:12px; color:#64748b">Perempuan</div></div></div>`;
+}
+
+function renderSiswaPage(d) {
+   setTxt('std-txt-instansi', settings.Nama_Instansi); 
+   setTxt('std-txt-sekolah', settings.Nama_Sekolah);
+   document.getElementById('std-logo-instansi').src = DEFAULT_IMG;
+   document.getElementById('std-logo-sekolah').src = DEFAULT_IMG;
+
+   apiCall('getBase64FromUrl', {url: settings.Logo_Instansi}, u => { if(u.length>100) document.getElementById('std-logo-instansi').src=u; });
+   apiCall('getBase64FromUrl', {url: settings.Logo_Sekolah}, u => { if(u.length>100) document.getElementById('std-logo-sekolah').src=u; });
+   
+   setTxt('std-nama-main', d.nama); setTxt('std-nisn-main', d.nisn); setTxt('std-status', d.status.toUpperCase()); document.getElementById('std-status').className = d.status === 'Aktif' ? 'status-active' : 'status-inactive';
+   document.getElementById('std-foto').src = DEFAULT_IMG;
+   apiCall('getBase64FromUrl', {url: d.foto_url}, b64=>{ if(b64) document.getElementById('std-foto').src=b64; });
+   setTxt('b-nisn', d.nisn); setTxt('b-nis', d.nis||'-'); setTxt('b-nama', d.nama); setTxt('b-nik', d.nik||'-');
+   setTxt('b-gender', d.gender==='L'?'Laki-laki':'Perempuan'); setTxt('b-tmp', d.tmp_lahir||'-'); setTxt('b-tgl', d.tgl_lahir_indo||'-');
+   setTxt('b-agama', d.agama||'-'); setTxt('b-kelas', d.kelas||'-'); setTxt('b-jurusan', d.jurusan||'-'); setTxt('b-thn', d.thn_masuk||'-');
+   setTxt('b-ayah', d.ayah||'-'); setTxt('b-ibu', d.ibu||'-'); setTxt('b-hp', d.nohp||'-'); setTxt('b-email', d.email||'-');
+   setTxt('b-alamat', d.alamat||'-'); setTxt('b-rtrw', d.rtrw||'-'); setTxt('b-desa', d.desa||'-'); setTxt('b-kec', d.kecamatan||'-'); setTxt('b-kab', d.kabupaten||'-'); setTxt('b-prov', d.provinsi||'-'); setTxt('b-pos', d.kodepos||'-');
+}
+
+function openChangePasswordModal() { 
+   document.getElementById('modal-ganti-pass').style.display = 'flex'; 
+   document.querySelector('#modal-ganti-pass form').reset(); 
+   navSiswa('password');
+}
+
+function submitChangePass(e) {
+    e.preventDefault(); if(!currentUser) return; showLoader('Memproses Password...', 5);
+    apiCall('changeOwnPassword', {rowId: currentUser.row, oldPass: e.target.old_pass.value, newPass: e.target.new_pass.value}, res => { 
+        hideLoader(); if(res.status === 'success') { Swal.fire('Berhasil', res.message, 'success'); closeModal('modal-ganti-pass'); } else { Swal.fire('Gagal', res.message, 'error'); } 
+    });
+}
+
+function viewDetail(row) {
+    var s = allSiswa.find(x => x.row === row); if(!s) return; document.getElementById('modal-detail').style.display = 'flex';
+    setTxt('det-nisn', s.nisn); setTxt('det-nama', s.nama); setTxt('det-kelas', s.kelas); setTxt('det-jurusan', s.jurusan);
+    setTxt('det-ttl', (s.tmp_lahir||"") + ", " + (s.tgl_lahir_indo||"")); setTxt('det-gender', s.gender); setTxt('det-agama', s.agama);
+    setTxt('det-ayah', s.ayah); setTxt('det-ibu', s.ibu); setTxt('det-alamat', (s.alamat||"-") + ", " + (s.desa||"") + ", " + (s.kecamatan||"")); setTxt('det-hp', s.nohp); setTxt('det-status', s.status);
+    document.getElementById('detail-row-id').value = s.row; document.getElementById('reset-pass-input').value = ""; document.getElementById('detail-foto').src = DEFAULT_IMG;
+    apiCall('getBase64FromUrl', {url: s.foto_url}, b64 => { document.getElementById('detail-foto').src = b64 || DEFAULT_IMG; });
+}
+
+function triggerResetPassword() {
+    var row = document.getElementById('detail-row-id').value, newPass = document.getElementById('reset-pass-input').value;
+    if(!newPass) { Swal.fire('Error', 'Masukkan Password Baru!', 'warning'); return; }
+    Swal.fire({ title: 'Konfirmasi', text: "Reset password?", icon: 'warning', showCancelButton: true }).then((result) => {
+      if (result.isConfirmed) { 
+          showLoader('Mereset Password...', 5); 
+          apiCall('resetPasswordSiswa', {row: row, newPass: newPass}, res => { 
+              hideLoader(); if(res.status === 'success') { Swal.fire('Berhasil', res.message, 'success'); closeModal('modal-detail'); } else { Swal.fire('Gagal', res.message, 'error'); } 
+          }); 
+      }
+    });
+}
+
+function submitAdminAccount(e) {
+    e.preventDefault();
+    Swal.fire({ title: 'Update Akun?', text: "Harus login ulang.", icon: 'warning', showCancelButton: true }).then((r) => {
+        if(r.isConfirmed) { 
+            var d={new_username:e.target.new_username.value, new_password:e.target.new_password.value}; showLoader('Mengamankan Akun...', 5);
+            apiCall('updateAdminAccount', d, res => { 
+                hideLoader(); if(res.status === 'success') { Swal.fire('Sukses', res.message, 'success').then(() => logout()); } else { Swal.fire('Gagal', res.message, 'error'); } 
+            });
+        }
+    });
+}
+
+function openModalSiswa(mode) {
+   document.getElementById('modal-siswa').style.display = 'flex'; document.getElementById('form-siswa').reset(); document.getElementById('form-mode').value = mode; document.getElementById('preview-final').src = DEFAULT_IMG;
+   document.getElementsByName('password')[0].placeholder = mode === 'add' ? 'Default: 123456' : 'Kosongkan jika tidak diganti';
+   if(cropper) { cropper.destroy(); cropper=null; } document.getElementById('image-cropper').src = ""; setTxt('modal-title', mode==='add'?'Tambah Data':'Edit Data');
+}
+
+function editSiswa(row) {
+   var s = allSiswa.find(x => x.row === row); openModalSiswa('edit'); var f = document.getElementById('form-siswa');
+   f.rowId.value = s.row; f.nisn.value = s.nisn; f.nis.value=s.nis; f.nama.value = s.nama; f.nik.value = s.nik; f.tmp_lahir.value = s.tmp_lahir; f.tgl_lahir.value = s.tgl_lahir;
+   f.gender.value = s.gender; f.agama.value=s.agama; f.kelas.value = s.kelas; f.jurusan.value = s.jurusan; f.thn_masuk.value = s.thn_masuk; f.status.value = s.status; f.masa_berlaku.value = s.masa_berlaku; f.ayah.value=s.ayah; f.ibu.value=s.ibu; f.password.value = ""; 
+   f.nohp.value=s.nohp; f.email.value=s.email; f.alamat.value=s.alamat; f.rtrw.value=s.rtrw; f.desa.value=s.desa; f.kecamatan.value=s.kecamatan; f.kabupaten.value=s.kabupaten; f.provinsi.value=s.provinsi; f.kodepos.value=s.kodepos; f.oldFotoId.value = s.foto_id; f.oldFotoUrl.value = s.foto_url;
+   apiCall('getBase64FromUrl', {url: s.foto_url}, b64 => { document.getElementById('preview-final').src = b64; });
+}
+
+function submitSiswa(e) {
+   e.preventDefault(); var f = e.target, d = {}; for(var i=0; i<f.elements.length; i++) if(f.elements[i].name) d[f.elements[i].name] = f.elements[i].value;
+   d.fotoBase64 = document.getElementById('final-foto-base64').value; showLoader('Menyimpan Data Siswa...', 5);
+   apiCall('simpanSiswa', d, res => { 
+       hideLoader(); if(res.status === 'success') { Swal.fire('Berhasil', res.message, 'success'); document.getElementById('modal-siswa').style.display='none'; loadSiswa(true, 'Memuat Data Siswa...'); } else { Swal.fire('Gagal', res.message, 'error'); } 
+   });
+}
+
+function hapusSiswa(row) { 
+    Swal.fire({ title: 'Hapus data?', text: "Permanen!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33' }).then((result) => { 
+        if (result.isConfirmed) { 
+            showLoader('Menghapus...', 5); 
+            apiCall('hapusSiswa', {row: row}, () => { 
+                hideLoader(); Swal.fire('Terhapus!', '', 'success'); loadSiswa(true, 'Memuat Data Siswa...'); 
+            }); 
+        } 
+    });
+}
+
+function viewCard(row, role) {
+   var d = (role === 'siswa') ? currentUser : allSiswa.find(x => x.row === row);
+   if(role === 'siswa' && d.status !== 'Aktif') { Swal.fire('Akses Dibatasi', 'Hanya siswa aktif.', 'warning'); return; }
+   if(!d) return;
+   
+   if(role === 'siswa') navSiswa('kartu');
+
+   document.getElementById('modal-kartu').style.display = 'flex'; document.getElementById('loading-card').style.display = 'block'; document.getElementById('capture-area').style.opacity = '0';
+   
+   var cdCard = document.getElementById('card-countdown'); var countCard = 10; cdCard.style.fontSize = "32px"; cdCard.innerText = countCard;
+   var intervalCard = setInterval(()=>{ countCard--; if(countCard > 0) { cdCard.innerText = countCard; } else { cdCard.style.fontSize = "16px"; cdCard.innerText = "On process..."; } }, 1000);
+
+   setTxt('card-instansi', settings.Nama_Instansi); setTxt('card-sekolah', settings.Nama_Sekolah); setTxt('card-alamat-sek', settings.Alamat_Sekolah);
+   setTxt('card-nama', d.nama); setTxt('card-nisn', d.nisn); setTxt('card-tmp', d.tmp_lahir || "-"); setTxt('card-tgl', d.tgl_lahir_indo || "-"); setTxt('card-jk', (d.gender === 'L' ? 'Laki-laki' : 'Perempuan'));
+   document.getElementById('qrcode').innerHTML = ""; document.getElementById('card-foto').src = DEFAULT_IMG;
+   
+   var logo1 = document.getElementById('card-logo-instansi'), logo2 = document.getElementById('card-logo-sekolah'), bgBack = document.getElementById('card-bg-back');
+   logo1.style.display = 'none'; logo2.style.display = 'none'; bgBack.src = DEFAULT_IMG;
+   new QRCode(document.getElementById("qrcode"), {text: String(d.nisn), width:60, height:60});
+   
+   apiCall('getSemuaGambarKartu', {fotoUrl: d.foto_url, bgDepan: settings.Background_Kartu, bgBelakang: settings.Background_Belakang, logoInstansi: settings.Logo_Instansi, logoSekolah: settings.Logo_Sekolah}, res => {
+       clearInterval(intervalCard);
+       document.getElementById('card-foto').src = res.foto || DEFAULT_IMG;
+       if(res.logo1 && res.logo1.length > 100) { logo1.src = res.logo1; logo1.style.display = 'block'; }
+       if(res.logo2 && res.logo2.length > 100) { logo2.src = res.logo2; logo2.style.display = 'block'; }
+       
+       var bgLayer = document.getElementById('card-bg-layer'), bgGrad = document.querySelector('.card-bg-gradient');
+       if(res.bg1 && res.bg1.length > 200) { bgLayer.style.backgroundImage = "url('"+res.bg1+"')"; bgLayer.style.display = "block"; bgGrad.style.display = "none"; } else { bgLayer.style.display = "none"; bgGrad.style.display = "block"; }
+       bgBack.src = (res.bg2 && res.bg2.length > 200) ? res.bg2 : DEFAULT_IMG;
+       document.getElementById('loading-card').style.display = 'none'; document.getElementById('capture-area').style.opacity = '1';
+   });
+}
+
+function loadSettings() {
+   var f = document.getElementById('form-setting');
+   f.set_instansi.value = settings.Nama_Instansi; f.set_sekolah.value = settings.Nama_Sekolah; f.set_alamat.value = settings.Alamat_Sekolah; f.set_marquee.value = settings.Running_Text;
+   
+   document.getElementById('url_logo_instansi').value = settings.Logo_Instansi || ""; 
+   document.getElementById('url_logo_sekolah').value = settings.Logo_Sekolah || ""; 
+   document.getElementById('url_bg_kartu').value = settings.Background_Kartu || ""; 
+   document.getElementById('url_bg_belakang').value = settings.Background_Belakang || ""; 
+
+   document.getElementById('preview-logo_instansi').src = DEFAULT_IMG;
+   document.getElementById('preview-logo_sekolah').src = DEFAULT_IMG;
+   document.getElementById('preview-bg_kartu').src = DEFAULT_IMG;
+   document.getElementById('preview-bg_belakang').src = DEFAULT_IMG;
+
+   if(settings.Logo_Instansi) apiCall('getBase64FromUrl', {url: settings.Logo_Instansi}, b=>document.getElementById('preview-logo_instansi').src = b || DEFAULT_IMG);
+   if(settings.Logo_Sekolah) apiCall('getBase64FromUrl', {url: settings.Logo_Sekolah}, b=>document.getElementById('preview-logo_sekolah').src = b || DEFAULT_IMG);
+   if(settings.Background_Kartu) apiCall('getBase64FromUrl', {url: settings.Background_Kartu}, b=>document.getElementById('preview-bg_kartu').src = b || DEFAULT_IMG);
+   if(settings.Background_Belakang) apiCall('getBase64FromUrl', {url: settings.Background_Belakang}, b=>document.getElementById('preview-bg_belakang').src = b || DEFAULT_IMG);
+
+   document.getElementById('b64_logo_instansi').value = ""; 
+   document.getElementById('b64_logo_sekolah').value = "";
+   document.getElementById('b64_bg_kartu').value = ""; 
+   document.getElementById('b64_bg_belakang').value = "";
+
+   f.set_warna.value = settings.Warna_Tema; f.set_email.value = settings.Email_Sekolah || ""; f.set_web.value = settings.Web_Sekolah || ""; f.set_wa.value = settings.No_WA || "";
+}
+
+function submitSettings(e) {
+   e.preventDefault(); var d={}; for(var i=0;i<e.target.elements.length;i++) if(e.target.elements[i].name) d[e.target.elements[i].name]=e.target.elements[i].value;
+   d.logoInstansiBase64 = document.getElementById('b64_logo_instansi').value;
+   d.logoSekolahBase64 = document.getElementById('b64_logo_sekolah').value;
+   d.bgKartuBase64 = document.getElementById('b64_bg_kartu').value;
+   d.bgBelakangBase64 = document.getElementById('b64_bg_belakang').value;
+   
+   showLoader('Menyimpan Pengaturan...', 10);
+   apiCall('saveAppSettings', d, res => { 
+       hideLoader(); Swal.fire('Disimpan', res.message, 'success'); 
+       settings = res.newData; updateUITheme(); renderDynamicElements(); loadSettings();
+   });
+}
+
+function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+function navAdmin(menu) {
+   document.querySelectorAll('.nav-menu li').forEach(l=>l.classList.remove('active')); 
+   var pcMenu = document.getElementById('menu-'+menu);
+   if(pcMenu) pcMenu.classList.add('active');
+
+   document.querySelectorAll('#admin-bottom-nav .bottom-nav-item').forEach(l=>l.classList.remove('active'));
+   var mobMenu = document.querySelector(`#admin-bottom-nav .bottom-nav-item[onclick*="navAdmin('${menu}')"]`);
+   if(mobMenu) mobMenu.classList.add('active');
+
+   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')); 
+   document.getElementById('admin-'+menu).classList.add('active');
+   
+   if(menu==='data') loadSiswa(true, 'Memuat Data Siswa...'); 
+   if(menu==='settings') loadSettings(); 
+   if(menu==='home') updateStats();
+}
+
+function navSiswa(menu) {
+   document.querySelectorAll('#siswa-bottom-nav .bottom-nav-item').forEach(l=>l.classList.remove('active'));
+   var targetMenu = null;
+   if(menu === 'profil') targetMenu = document.querySelector(`#siswa-bottom-nav .bottom-nav-item:nth-child(1)`);
+   if(menu === 'kartu') targetMenu = document.querySelector(`#siswa-bottom-nav .bottom-nav-item:nth-child(2)`);
+   if(menu === 'password') targetMenu = document.querySelector(`#siswa-bottom-nav .bottom-nav-item:nth-child(3)`);
+   if(targetMenu) targetMenu.classList.add('active');
+}
+
+function logout() { Swal.fire({ title: 'Keluar?', icon: 'question', showCancelButton: true }).then((r) => { if (r.isConfirmed) { currentUser=null; localStorage.removeItem('sis_user'); localStorage.removeItem('sis_role'); document.getElementById('username').value=''; document.getElementById('password').value=''; showPage('login-page'); } }); }
+
+function handleLogin(e) {
+   e.preventDefault(); showLoader('Otentikasi Akun...', 5);
+   apiCall('loginUser', {username: document.getElementById('username').value, password: document.getElementById('password').value}, res => {
+      hideLoader();
+      if(res.status==='success') { 
+         currentUser=res.data; localStorage.setItem('sis_user', JSON.stringify(res.data)); localStorage.setItem('sis_role', res.role);
+         if(res.role==='admin'){ showPage('admin-page');navAdmin('home'); }else{ showPage('siswa-page');renderSiswaPage(currentUser); navSiswa('profil'); } 
+         const Toast = Swal.mixin({toast: true, position: 'top-end', showConfirmButton: false, timer: 3000}); Toast.fire({icon: 'success', title: 'Login Berhasil'});
+      } else { Swal.fire('Login Gagal', res.message, 'error'); }
+   });
+}
+
+function downloadTemplate() { 
+   Swal.fire({ title: 'Unduh Template?', text: "Format Excel (.xlsx) akan diunduh.", icon: 'question', showCancelButton: true, confirmButtonText: 'Unduh Sekarang', confirmButtonColor: settings.Warna_Tema
+   }).then((result) => { if (result.isConfirmed) { var ws=XLSX.utils.json_to_sheet([{}], {header:EXCEL_KEYS}); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Template"); XLSX.writeFile(wb, "Template_Siswa.xlsx"); } });
+}
+
+function exportData() { 
+    apiCall('getSiswaPaging', {page: 1, limit: 5000, search: ""}, res => { 
+        var data=res.data.map(s=>{return{NISN:s.nisn,Nama:s.nama,Kelas:s.kelas,Status:s.status}}); 
+        var ws=XLSX.utils.json_to_sheet(data); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Data_Siswa.xlsx"); 
+    }); 
+}
+
+function importData(input) { 
+   if(!input.files[0])return; var r=new FileReader(); 
+   r.onload=e=>{
+      var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'}), j=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]); 
+      Swal.fire({ title: 'Konfirmasi Import', html: `Akan memproses <b>${j.length}</b> baris data.<br>Data dengan NISN kembar akan dilewati.`, icon: 'info', showCancelButton: true, confirmButtonText: 'Ya, Proses!'
+      }).then((result) => {
+         if (result.isConfirmed) {
+             showLoader('Mengimpor Data...', 5);
+             apiCall('importSiswaBulk', {dataRows: j}, res => {
+                hideLoader(); if(res.status==='success'){ Swal.fire('Selesai', res.message, 'success'); loadSiswa(true, 'Memuat Data Siswa...'); } else{ Swal.fire('Gagal', res.message, 'error'); } input.value="";
+             });
+         } else { input.value=""; }
+      });
+   }; 
+   r.readAsArrayBuffer(input.files[0]); 
+}
+
+function initCropper(i){if(i.files&&i.files[0]){var r=new FileReader();r.onload=e=>{var m=document.getElementById('image-cropper');m.src=e.target.result;if(cropper)cropper.destroy();cropper=new Cropper(m,{aspectRatio:3/4,viewMode:1});};r.readAsDataURL(i.files[0]);}}
+function doCrop(){if(cropper){var b=cropper.getCroppedCanvas({width:600,height:800}).toDataURL('image/jpeg',0.8);document.getElementById('preview-final').src=b;document.getElementById('final-foto-base64').value=b;}}
+
+var currentCropTarget = "";
+function openCropperModal(input, target, ratio) {
+    if(input.files && input.files[0]) {
+        currentCropTarget = target;
+        document.getElementById('cropper-modal-title').innerText = target.includes('bg') ? "Potong Background (8.5 : 5.5)" : "Potong Logo (1:1)";
+        var r = new FileReader();
+        r.onload = e => {
+            document.getElementById('modal-cropper').style.display = 'flex';
+            var m = document.getElementById('image-cropper-logo'); m.src = e.target.result;
+            if(cropperLogo) cropperLogo.destroy();
+            cropperLogo = new Cropper(m, { aspectRatio: ratio, viewMode: 1 });
+        };
+        r.readAsDataURL(input.files[0]); input.value = ""; 
+    }
+}
+function doCropLogo() {
+    if(cropperLogo) {
+        var w = currentCropTarget.includes('bg') ? 850 : 400;
+        var h = currentCropTarget.includes('bg') ? 550 : 400;
+        var ext = currentCropTarget.includes('bg') ? 'image/jpeg' : 'image/png';
+        var qual = currentCropTarget.includes('bg') ? 0.85 : 0.9;
+        
+        var b = cropperLogo.getCroppedCanvas({width:w,height:h}).toDataURL(ext, qual);
+        document.getElementById('preview-' + currentCropTarget).src = b;
+        document.getElementById('b64_' + currentCropTarget).value = b;
+        closeModal('modal-cropper');
+    }
+}
+
+function downloadPNG(){ html2canvas(document.getElementById('capture-area'),{scale:3, useCORS:true, allowTaint:true}).then(c=>{ var a=document.createElement('a'); a.download="Kartu_Depan.jpg"; a.href=c.toDataURL("image/jpeg", 0.85); a.click(); }); }
+function downloadBack(){ var elem = document.getElementById('capture-area-back'); if(elem.querySelector('img').src === DEFAULT_IMG || elem.querySelector('img').src.length < 200) { Swal.fire('Info', 'Background belakang belum diatur.', 'info'); return; } html2canvas(elem,{scale:3, useCORS:true, allowTaint:true}).then(c=>{ var a=document.createElement('a'); a.download="Kartu_Belakang.jpg"; a.href=c.toDataURL("image/jpeg", 0.85); a.click(); }); }
+
+function closeModal(id){
+    document.getElementById(id).style.display='none';
+    if(id === 'modal-kartu' || id === 'modal-ganti-pass'){
+        if(currentUser && localStorage.getItem('sis_role') === 'siswa'){
+            navSiswa('profil'); 
+        }
+    }
+}
+function setTxt(i,v){var e=document.getElementById(i);if(e)e.innerText=v||"";}
+</script>
+
+  </body>
 </html>
