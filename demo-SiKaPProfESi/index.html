@@ -995,8 +995,15 @@ function submitAdminAccount(e) {
     Swal.fire({ title: 'Update Akun?', text: "Harus login ulang.", icon: 'warning', showCancelButton: true }).then((r) => {
         if(r.isConfirmed) { 
             var d={new_username:e.target.new_username.value, new_password:e.target.new_password.value}; showLoader('Mengamankan Akun...', 5);
-            apiCall('updateAdminAccount', d, res => { 
-                hideLoader(); if(res.status === 'success') { Swal.fire('Sukses', res.message, 'success').then(() => logout()); } else { Swal.fire('Gagal', res.message, 'error'); } 
+            
+            // PERBAIKAN: Bungkus d menjadi { form: d }
+            apiCall('updateAdminAccount', { form: d }, res => { 
+                hideLoader(); 
+                if(res.status === 'success') { 
+                    Swal.fire('Sukses', res.message, 'success').then(() => logout()); 
+                } else { 
+                    Swal.fire('Gagal', res.message, 'error'); 
+                } 
             });
         }
     });
@@ -1019,8 +1026,17 @@ function editSiswa(row) {
 function submitSiswa(e) {
    e.preventDefault(); var f = e.target, d = {}; for(var i=0; i<f.elements.length; i++) if(f.elements[i].name) d[f.elements[i].name] = f.elements[i].value;
    d.fotoBase64 = document.getElementById('final-foto-base64').value; showLoader('Menyimpan Data Siswa...', 5);
-   apiCall('simpanSiswa', d, res => { 
-       hideLoader(); if(res.status === 'success') { Swal.fire('Berhasil', res.message, 'success'); document.getElementById('modal-siswa').style.display='none'; loadSiswa(true, 'Memuat Data Siswa...'); } else { Swal.fire('Gagal', res.message, 'error'); } 
+   
+   // PERBAIKAN: Bungkus d menjadi { form: d }
+   apiCall('simpanSiswa', { form: d }, res => { 
+       hideLoader(); 
+       if(res.status === 'success') { 
+           Swal.fire('Berhasil', res.message, 'success'); 
+           document.getElementById('modal-siswa').style.display='none'; 
+           loadSiswa(true, 'Memuat Data Siswa...'); 
+       } else { 
+           Swal.fire('Gagal', res.message, 'error'); 
+       } 
    });
 }
 
@@ -1103,9 +1119,15 @@ function submitSettings(e) {
    d.bgBelakangBase64 = document.getElementById('b64_bg_belakang').value;
    
    showLoader('Menyimpan Pengaturan...', 10);
-   apiCall('saveAppSettings', d, res => { 
-       hideLoader(); Swal.fire('Disimpan', res.message, 'success'); 
-       settings = res.newData; updateUITheme(); renderDynamicElements(); loadSettings();
+   // PERBAIKAN: Bungkus d menjadi { form: d } dan tambahkan pengecekan status
+   apiCall('saveAppSettings', { form: d }, res => { 
+       hideLoader(); 
+       if (res.status === 'success') {
+           Swal.fire('Disimpan', res.message, 'success'); 
+           settings = res.newData; updateUITheme(); renderDynamicElements(); loadSettings();
+       } else {
+           Swal.fire('Gagal', res.message, 'error');
+       }
    });
 }
 
