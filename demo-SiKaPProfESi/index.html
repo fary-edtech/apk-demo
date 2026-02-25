@@ -4,7 +4,8 @@
 <head>
     <base target="_top">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    
     <title>Demo SiKaPProfESi</title>
     <link rel="icon" type="image/png" href="./imgsikapprofesi.png">
   
@@ -18,6 +19,17 @@
     
 <style>
 /* --- PERBAIKAN LOGO BERJEJER (ADMIN) --- */
+
+/* Mencegah double-tap zoom dan pinch-to-zoom berlebih di perangkat mobile/iOS */
+html, body {
+    touch-action: pan-y; /* Hanya mengizinkan scroll atas-bawah, melarang zoom cubitan */
+    overscroll-behavior-y: none; /* Mencegah efek membal (bounce) saat mentok scroll di HP */
+}
+
+input, button, select, textarea {
+    touch-action: manipulation; /* Mencegah zoom saat tombol atau input diklik cepat */
+    font-size: 16px !important; /* Rahasia iOS: Jika font size di bawah 16px, iPhone akan otomatis nge-zoom saat input di-klik. Ini mencegahnya. */
+}
 .kop-admin-style { background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 25px; text-align: center; border-bottom: 4px solid var(--primary); position: relative; animation: fadeIn 0.5s ease-in; display: block; }
 #img-kop-admin, #img-kop2-admin { height: 75px !important; width: auto !important; object-fit: contain; margin: 0 15px 15px 15px; display: inline-block !important; vertical-align: middle; }
 .kop-text { display: block; margin-top: 5px; }
