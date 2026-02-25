@@ -187,9 +187,9 @@ body { background: var(--light); color: var(--dark); font-size: 13px; }
 .info-table-new td { padding: 1px 0px; vertical-align: top; font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 400; line-height: 1; }
 .info-table-new .lbl { width: 60px; }
 /* Mengatur posisi jarak dari bawah dan kanan (misal kita buat jarak 5px dari tepi) */
-.qr-area-new { position: absolute; bottom: 3px; right: 3px; background: white; padding: 2px; border: 0px solid #ccc; }
+.qr-area-new { position: absolute; bottom: 3px; right: 3px; background: white; padding: 1px; border: 0px solid #ccc; }
 /* Mengatur ukuran tampilannya, silakan ubah 75px menjadi lebih besar/kecil sesuai selera */
-#qrcode img { width: 90px; height: 90px; display:block; }
+#qrcode img { width: 95px; height: 95px; display:block; }
 .loader-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
 .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -213,6 +213,13 @@ div:where(.swal2-container) { font-family: 'Poppins', sans-serif !important; z-i
 @media (max-width: 768px) {
     .bottom-nav { display: flex; }
     
+    /* --- TAMBAHAN FIX LAYOUT HP --- */
+    html, body { overflow-x: hidden; width: 100%; } /* Mengunci layar agar tidak bisa digeser ke kiri/kanan */
+    .std-header { width: 100%; overflow-x: hidden; }
+    .std-container { width: 100%; padding: 0 15px; padding-bottom: 80px; margin-top: 20px; }
+    .std-header-container { width: 100%; padding: 10px 15px; } /* Menyamakan jarak padding header dan badan */
+    .bio-table-responsive { padding: 15px; overflow-x: auto; } /* Mencegah tabel mendorong layar */
+    /* ------------------------------ */
     /* Tombol Scroll To Top Diperbaiki Posisinya */
     .btn-scroll-top { bottom: 85px !important; right: 15px !important; z-index: 9999 !important; }
     
@@ -1086,7 +1093,7 @@ function viewCard(row, role) {
    
    var logo1 = document.getElementById('card-logo-instansi'), logo2 = document.getElementById('card-logo-sekolah'), bgBack = document.getElementById('card-bg-back');
    logo1.style.display = 'none'; logo2.style.display = 'none'; bgBack.src = DEFAULT_IMG;
-   new QRCode(document.getElementById("qrcode"), {text: String(d.nisn), width:90, height:90});
+   new QRCode(document.getElementById("qrcode"), {text: String(d.nisn), width:95, height:95});
    
    apiCall('getSemuaGambarKartu', {fotoUrl: d.foto_url, bgDepan: settings.Background_Kartu, bgBelakang: settings.Background_Belakang, logoInstansi: settings.Logo_Instansi, logoSekolah: settings.Logo_Sekolah}, res => {
        clearInterval(intervalCard);
