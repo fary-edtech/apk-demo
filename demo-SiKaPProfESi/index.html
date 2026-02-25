@@ -127,7 +127,6 @@ body { background: var(--light); color: var(--dark); font-size: 13px; }
 .login-footer { position: relative; z-index: 10; margin-top: 30px; text-align: center; color: rgba(255,255,255,0.6); font-size: 11px; }
 
 /* --- DASHBOARD SISWA PREMIUM STYLE --- */
-
    
 .std-header { width: 100%; overflow-x: hidden; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px 0; position: sticky; top: 0; z-index: 50; }
 .std-container { width: 100%; padding: 0 15px; padding-bottom: 80px; margin-top: 20px; }
@@ -144,7 +143,7 @@ body { background: var(--light); color: var(--dark); font-size: 13px; }
 .btn-logout-std { background: #fee2e2; color: #ef4444; border: none; padding: 8px 16px; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; display: flex; align-items: center; gap: 8px; margin-left: 15px; }
 .btn-logout-std:hover { background: #fecaca; }
 
-.std-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+.std-container { width: 100%; margin: 30px auto; padding: 0 20px; }
 .std-grid { display: grid; grid-template-columns: 350px 1fr; gap: 25px; align-items: start; }
 .std-profile-card { text-align: center; padding: 30px; border-top: 4px solid var(--primary); }
 .std-photo-frame { width: 160px; height: 210px; margin: 0 auto 20px; border: 5px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; border-radius: 8px; background: #f1f5f9; }
@@ -188,9 +187,9 @@ body { background: var(--light); color: var(--dark); font-size: 13px; }
 .info-table-new td { padding: 1px 0px; vertical-align: top; font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 400; line-height: 1; }
 .info-table-new .lbl { width: 60px; }
 /* Mengatur posisi jarak dari bawah dan kanan (misal kita buat jarak 5px dari tepi) */
-.qr-area-new { position: absolute; bottom: 5px; right: 5px; background: white; padding: 2px; border: 0px solid #ccc; }
+.qr-area-new { position: absolute; bottom: 3px; right: 3px; background: white; padding: 2px; border: 0px solid #ccc; }
 /* Mengatur ukuran tampilannya, silakan ubah 75px menjadi lebih besar/kecil sesuai selera */
-#qrcode img { width: 100px; height: 100px; display:block; }
+#qrcode img { width: 90px; height: 90px; display:block; }
 .loader-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
 .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -1087,7 +1086,7 @@ function viewCard(row, role) {
    
    var logo1 = document.getElementById('card-logo-instansi'), logo2 = document.getElementById('card-logo-sekolah'), bgBack = document.getElementById('card-bg-back');
    logo1.style.display = 'none'; logo2.style.display = 'none'; bgBack.src = DEFAULT_IMG;
-   new QRCode(document.getElementById("qrcode"), {text: String(d.nisn), width:100, height:100});
+   new QRCode(document.getElementById("qrcode"), {text: String(d.nisn), width:90, height:90});
    
    apiCall('getSemuaGambarKartu', {fotoUrl: d.foto_url, bgDepan: settings.Background_Kartu, bgBelakang: settings.Background_Belakang, logoInstansi: settings.Logo_Instansi, logoSekolah: settings.Logo_Sekolah}, res => {
        clearInterval(intervalCard);
