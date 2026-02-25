@@ -19,17 +19,6 @@
     
 <style>
 /* --- PERBAIKAN LOGO BERJEJER (ADMIN) --- */
-
-/* Mencegah double-tap zoom dan pinch-to-zoom berlebih di perangkat mobile/iOS */
-html, body {
-    touch-action: pan-y; /* Hanya mengizinkan scroll atas-bawah, melarang zoom cubitan */
-    overscroll-behavior-y: none; /* Mencegah efek membal (bounce) saat mentok scroll di HP */
-}
-
-input, button, select, textarea {
-    touch-action: manipulation; /* Mencegah zoom saat tombol atau input diklik cepat */
-    font-size: 16px !important; /* Rahasia iOS: Jika font size di bawah 16px, iPhone akan otomatis nge-zoom saat input di-klik. Ini mencegahnya. */
-}
 .kop-admin-style { background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 25px; text-align: center; border-bottom: 4px solid var(--primary); position: relative; animation: fadeIn 0.5s ease-in; display: block; }
 #img-kop-admin, #img-kop2-admin { height: 75px !important; width: auto !important; object-fit: contain; margin: 0 15px 15px 15px; display: inline-block !important; vertical-align: middle; }
 .kop-text { display: block; margin-top: 5px; }
@@ -45,7 +34,7 @@ input, button, select, textarea {
 :root { --primary: #4f46e5; --secondary: #64748b; --success: #16a34a; --warning: #f59e0b; --danger: #dc2626; --light: #f8fafc; --dark: #1e293b; --white: #ffffff; --border: #e2e8f0; }
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
 html { scroll-behavior: smooth; }
-body { background: var(--light); color: var(--dark); font-size: 13px; }
+body { background: var(--light); color: var(--dark); font-size: 13px; overflow-x: hidden; width: 100%; }
 
 /* COMPONENT */
 .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; color: white; justify-content: center; transition: 0.2s; }
@@ -127,11 +116,9 @@ body { background: var(--light); color: var(--dark); font-size: 13px; }
 .login-footer { position: relative; z-index: 10; margin-top: 30px; text-align: center; color: rgba(255,255,255,0.6); font-size: 11px; }
 
 /* --- DASHBOARD SISWA PREMIUM STYLE --- */
-   
-.std-header { width: 100%; overflow-x: hidden; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px 0; position: sticky; top: 0; z-index: 50; }
-.std-container { width: 100%; padding: 0 15px; padding-bottom: 80px; margin-top: 20px; }
-.std-header-container { width: 100%; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: padding: 10px 15px;}
-.bio-table-responsive { padding: 15px; overflow-x: auto; } /* Mencegah tabel mendorong layar */
+.std-header { width: 100%; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px 0; position: sticky; top: 0; z-index: 50; }
+.std-header-container { max-width: 1200px; width: 100%; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+
 /* Struktur Header Baru yang Stabil */
 .std-brand { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; }
 .header-logo { height: 50px; width: auto; object-fit: contain; }
@@ -143,7 +130,7 @@ body { background: var(--light); color: var(--dark); font-size: 13px; }
 .btn-logout-std { background: #fee2e2; color: #ef4444; border: none; padding: 8px 16px; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; display: flex; align-items: center; gap: 8px; margin-left: 15px; }
 .btn-logout-std:hover { background: #fecaca; }
 
-.std-container { width: 100%; margin: 30px auto; padding: 0 20px; }
+.std-container { max-width: 1200px; width: 100%; margin: 30px auto; padding: 0 20px; }
 .std-grid { display: grid; grid-template-columns: 350px 1fr; gap: 25px; align-items: start; }
 .std-profile-card { text-align: center; padding: 30px; border-top: 4px solid var(--primary); }
 .std-photo-frame { width: 160px; height: 210px; margin: 0 auto 20px; border: 5px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; border-radius: 8px; background: #f1f5f9; }
@@ -157,7 +144,7 @@ body { background: var(--light); color: var(--dark); font-size: 13px; }
 .std-bio-card { padding: 0; overflow: hidden; }
 .card-header-line { background: #f8fafc; padding: 15px 25px; border-bottom: 1px solid #e2e8f0; }
 .card-header-line h3 { font-size: 16px; color: #334155; margin: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.bio-table-responsive { padding: 25px; overflow-x: auto; }
+.bio-table-responsive { padding: 25px; overflow-x: auto; width: 100%; } /* Mencegah tabel mendorong layar */
 .bio-table { width: 100%; border-collapse: collapse; }
 .bio-table td { padding: 10px 5px; vertical-align: top; font-size: 14px; border-bottom: 1px solid #f1f5f9; color: #475569; }
 .bio-table .lbl { width: 180px; font-weight: 500; color: #64748b; }
@@ -190,6 +177,7 @@ body { background: var(--light); color: var(--dark); font-size: 13px; }
 .qr-area-new { position: absolute; bottom: 3px; right: 3px; background: white; padding: 1px; border: 0px solid #ccc; }
 /* Mengatur ukuran tampilannya, silakan ubah 75px menjadi lebih besar/kecil sesuai selera */
 #qrcode img { width: 95px; height: 95px; display:block; }
+
 .loader-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
 .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -213,13 +201,6 @@ div:where(.swal2-container) { font-family: 'Poppins', sans-serif !important; z-i
 @media (max-width: 768px) {
     .bottom-nav { display: flex; }
     
-    /* --- TAMBAHAN FIX LAYOUT HP --- */
-    html, body { overflow-x: hidden; width: 100%; } /* Mengunci layar agar tidak bisa digeser ke kiri/kanan */
-    .std-header { width: 100%; overflow-x: hidden; }
-    .std-container { width: 100%; padding: 0 15px; padding-bottom: 80px; margin-top: 20px; }
-    .std-header-container { width: 100%; padding: 10px 15px; } /* Menyamakan jarak padding header dan badan */
-    .bio-table-responsive { padding: 15px; overflow-x: auto; } /* Mencegah tabel mendorong layar */
-    /* ------------------------------ */
     /* Tombol Scroll To Top Diperbaiki Posisinya */
     .btn-scroll-top { bottom: 85px !important; right: 15px !important; z-index: 9999 !important; }
     
@@ -231,16 +212,36 @@ div:where(.swal2-container) { font-family: 'Poppins', sans-serif !important; z-i
 
     /* Modifikasi Layout Admin */
     .admin-wrapper { display: block; height: auto; overflow: visible; }
-    .main-content { padding: 15px; padding-bottom: 80px; } /* Ruang agar tidak tertutup menu bawah */
+    .main-content { padding: 15px; padding-bottom: 80px; width: 100%; overflow-x: hidden; } /* Ruang agar tidak tertutup menu bawah */
     .form-cols, .grid-3, .grid-2 { grid-template-columns: 1fr; gap: 15px; }
     .col-photo img { height: 250px; }
     
-    /* Modifikasi Layout Siswa */
-    .std-container { padding-bottom: 80px; } /* Ruang menu bawah */
-    .std-grid { grid-template-columns: 1fr; gap: 20px; }
+    /* --- FIX LAYOUT SISWA DI HP --- */
+    .std-container { 
+        padding-left: 15px; 
+        padding-right: 15px; 
+        padding-bottom: 80px; 
+        margin-top: 15px;
+    }
     
+    .std-header-container { 
+        padding: 10px 15px; 
+        flex-direction: row; 
+        justify-content: space-between; 
+        align-items: center; 
+    }
+    
+    .std-grid { grid-template-columns: 1fr; gap: 15px; }
+    
+    .bio-table-responsive { 
+        padding: 15px; 
+        /* Ini adalah kunci agar tabel tidak mendorong body */
+        width: 100%; 
+        overflow-x: auto; 
+    }
+    /* ------------------------------ */
+
     /* Layout Header Siswa Khusus HP yang Stabil & Muat Teksnya */
-    .std-header-container { padding: 10px; flex-direction: row; justify-content: space-between; align-items: center; }
     .std-brand { gap: 5px; justify-content: space-between; }
     .header-logo { height: 35px; width: auto; object-fit: contain; } /* Mengecil proporsional di HP */
     .std-titles { flex: 1; padding: 0 5px; }
@@ -265,6 +266,7 @@ div:where(.swal2-container) { font-family: 'Poppins', sans-serif !important; z-i
     .btn-group { flex-wrap: wrap; }
 }
 </style>
+
   </head>
   <body>
 
