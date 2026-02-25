@@ -468,8 +468,16 @@ input, button, select, textarea {
       </div>
   </div>
 
-  <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[9999] hidden flex items-center justify-center flex-col transition-opacity pointer-events-none"><div class="p-5 bg-white rounded-2xl shadow-2xl flex flex-col items-center"><div class="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-3"></div><p class="text-slate-800 text-xs font-bold tracking-wide">Memproses...</p></div></div>
-  <div id="modalContainer"></div>
+  <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[9999] hidden flex items-center justify-center flex-col transition-opacity pointer-events-none">
+    <div class="p-6 bg-white rounded-3xl shadow-2xl flex flex-col items-center min-w-[160px] transform scale-110">
+        <div class="w-14 h-14 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4 relative flex items-center justify-center">
+            <div class="absolute inset-0 flex items-center justify-center animate-[spin_1s_linear_infinite_reverse]">
+                <span id="loadingCountdown" class="text-xs font-extrabold text-indigo-600">8</span>
+            </div>
+        </div>
+        <p id="loadingText" class="text-slate-800 text-sm font-bold tracking-wide text-center leading-tight">Memproses... <br><span class="text-[10px] text-gray-500 font-normal">Mohon tunggu</span></p>
+    </div>
+</div>
 
   <div id="privacyModal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-gray-900/75 transition-opacity backdrop-blur-sm" onclick="closePrivacyModal()"></div>
@@ -786,7 +794,7 @@ async function handleLogin(event) {
     }
 }
 
-function logout() { stopAndBack(false); localStorage.removeItem('absensiAppSession'); currentUser = null; appCache = { siswa: null, guru: null }; document.getElementById('dashboardContainer').classList.add('hidden'); document.getElementById('loginPage').classList.remove('hidden'); document.getElementById('username').value = ''; document.getElementById('password').value = ''; document.getElementById('nisn').value = ''; document.getElementById('sidebar').classList.add('-translate-x-full'); }
+
 
 function togglePassword() { const passwordInput = document.getElementById('password'); const icon = document.getElementById('togglePasswordIcon'); if (passwordInput.type === 'password') { passwordInput.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } else { passwordInput.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); } }
 
@@ -1839,8 +1847,83 @@ function returnToDashboard() {
     if(currentUser.role === 'admin') loadAdminDashboard(); else if(currentUser.role === 'guru') loadGuruDashboard(); else loadSiswaDashboard();
 }
 
-function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
-function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+// VARIABEL GLOBAL UNTUK TIMER LOADING
+let loadingInterval;
+
+function showLoading() { 
+    const overlay = document.getElementById('loadingOverlay');
+    const countdownEl = document.getElementById('loadingCountdown');
+    const textEl = document.getElementById('loadingText');
+    
+    // Tampilkan overlay
+    overlay.classList.remove('hidden'); 
+    
+    // Setel ulang teks dan waktu awal
+    let timeLeft = 8;
+    countdownEl.textContent = timeLeft;
+    countdownEl.parentElement.style.display = 'flex'; // Tampilkan lingkaran angka
+    textEl.innerHTML = 'Memproses... <br><span class="text-[10px] text-gray-500 font-normal">Mohon tunggu</span>';
+
+    // Bersihkan interval yang mungkin masih berjalan sebelumnya
+    clearInterval(loadingInterval);
+    
+    // Mulai hitung mundur
+    loadingInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+            countdownEl.textContent = timeLeft;
+        } else if (timeLeft === 0) {
+            // Ketika waktu habis, sembunyikan angka dan ubah teks peringatan
+            countdownEl.parentElement.style.display = 'none';
+            textEl.innerHTML = 'Sedang memproses data... <br><span class="text-[10px] text-orange-600 font-bold">Tunggu sebentar..</span>';
+        }
+    }, 1000); // Turun setiap 1 detik (1000 ms)
+}
+
+function hideLoading() { 
+    // Sembunyikan layar dan hentikan waktu berjalan agar tidak jalan diam-diam di background
+    document.getElementById('loadingOverlay').classList.add('hidden'); 
+    clearInterval(loadingInterval);
+}
+
+function logout() { 
+    // Tampilkan Popup Konfirmasi SweetAlert2 sebelum memproses keluar
+    Swal.fire({
+        title: 'Konfirmasi Keluar',
+        text: "Apakah Anda yakin ingin keluar dari aplikasi?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Ya, Keluar!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            executeLogout();
+        }
+    });
+}
+
+// Fungsi eksekusi logout (Dijalankan jika user klik "Ya, Keluar!")
+function executeLogout() {
+    stopAndBack(false); 
+    localStorage.removeItem('absensiAppSession'); 
+    currentUser = null; 
+    appCache = { siswa: null, guru: null }; 
+    document.getElementById('dashboardContainer').classList.add('hidden'); 
+    document.getElementById('loginPage').classList.remove('hidden'); 
+    
+    // Kosongkan form login
+    if(document.getElementById('username')) document.getElementById('username').value = ''; 
+    if(document.getElementById('password')) document.getElementById('password').value = ''; 
+    if(document.getElementById('nisn')) document.getElementById('nisn').value = ''; 
+    
+    document.getElementById('sidebar').classList.add('-translate-x-full');
+}
+
+
+
 function showModal(content) { const container = document.getElementById('modalContainer'); container.innerHTML = `<div class="fixed inset-0 z-50 flex items-center justify-center p-4"><div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div><div class="relative w-full max-w-2xl transform transition-all animate-fade-in">${content}</div></div>`; }
 function closeModal() { document.getElementById('modalContainer').innerHTML = ''; }
 function showAlert(type, message) {
