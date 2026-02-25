@@ -43,7 +43,7 @@ input, button, select, textarea {
     .card:hover { transform: translateY(-3px); }
     
     .app-logo { max-height: 80px; margin: 5px; padding: 2px; object-fit: contain; }
-    .login-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 15px; padding: 40px; width: 100%; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); position: relative; }
+    .login-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 10px; padding: 20px; width: 100%; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); position: relative; }
     .settings-preview { max-height: 100px; width: auto; object-fit: contain; border: 1px solid #ddd; padding: 5px; border-radius: 5px; display: block; margin-top: 10px; }
     .student-photo { width: 120px; height: 160px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.1); background: #eee; }
     
@@ -70,15 +70,28 @@ input, button, select, textarea {
     .mobile-toggle { display: none; margin-right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--secondary-color); }
     .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; }
     
-    @media (max-width: 768px) {
-        .mobile-toggle { display: block; margin-top: 20px; }
-        .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100vh; z-index: 2001; overflow-y: auto; box-shadow: 5px 0 15px rgba(0,0,0,0.2); padding-bottom: 100px; }
-        .sidebar.show { left: 0; }
-        .sidebar-overlay.show { display: block; }
-        .col-md-10 { width: 100%; padding: 0; }
-        .fab-refresh { width: 45px; height: 45px; font-size: 1.2rem; bottom: 40px; right: 20px; }
+   @media (max-width: 768px) {
+        /* Sembunyikan sidebar lama dan tombol garis tiga di HP */
+        .mobile-toggle { display: none !important; }
+        #mainSidebar { display: none !important; }
+        .sidebar-overlay { display: none !important; }
+        
+        /* Beri jarak atas dan bawah agar konten tidak tertutup bar menu */
+        .col-md-10 { padding-top: 70px !important; padding-bottom: 90px !important; width: 100%; }
+        
+        /* Atur ulang posisi tombol Refresh (Diatas tombol Scroll Top) */
+        .fab-refresh { width: 45px; height: 45px; font-size: 1.2rem; bottom: 140px !important; right: 20px; z-index: 1020; }
         .table-responsive { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     }
+
+    /* Styling Efek Menu Bawah HP */
+    .m-nav-item { color: #858796 !important; transition: all 0.3s; padding: 5px; flex-grow: 1;}
+    .m-nav-item.active { color: var(--primary-color) !important; transform: translateY(-3px); }
+    .m-nav-item:active { transform: scale(0.9); }
+    
+    /* Tombol Scroll Top (Dibawah Refresh) */
+    #btnScrollTop { position: fixed; right: 20px; bottom: 85px; z-index: 1020; width: 45px; height: 45px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 1.2rem; background: #6c757d; color: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s; }
+    #btnScrollTop:active { transform: scale(0.9); }
 
     /* --- PASSWORD EYE --- */
     .pass-wrapper { position: relative; }
@@ -99,7 +112,8 @@ input, button, select, textarea {
                 <img id="loginLogoInstansi" class="floating-logo hidden">
                 <img id="loginLogoSekolah" class="floating-logo hidden" style="animation-delay: 0.5s;">
             </div>
-            <h6 class="text-uppercase fw-bold text-secondary mb-0 small" id="lblInstansi">DINAS PENDIDIKAN</h6>
+            <h6 class="text-uppercase fw-bold text-secondary mb-0 small" id="lblInstansi">PEMERINTAH...LOADING...</h6>
+            <h6 class="text-uppercase fw-bold text-secondary mb-0 small" id="lblOpdLogin">LOADING...</h6>
             <h5 class="text-uppercase fw-bold text-dark mb-2" id="lblSekolah">NAMA SEKOLAH</h5>
              <center>
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgpnOpoQv4zKvXKWgVq_tFB5gKYVbjd8i-fgApUH-b36SrMAaqRX8V7ZFU3bU60gt8I8d77wlTeRI_F8UdMGaZl26EvQw6bBiwtFAygUMiaXSM7tDN-xiPl6r3RguMlwQ3N4BQ-fWaJ62_b318672r9c-iPiGHLhd9y4QHDPBc9SoFpTPwdDp0rkgLf6B4E/s100/Logo%20SiBuk%20InSTal.png" class="width:50px">
@@ -109,11 +123,11 @@ input, button, select, textarea {
         <form onsubmit="doLogin(event)">
             <div class="form-floating mb-3">
                 <input id="u" class="form-control rounded-pill px-4" placeholder="Username" required>
-                <label class="px-4">Username</label>
+                <label class="px-4">Username (admin)</label>
             </div>
             <div class="form-floating mb-4 pass-wrapper">
                 <input type="password" id="p" class="form-control rounded-pill px-4" placeholder="Password" style="padding-right: 50px;" required>
-                <label class="px-4">Password</label>
+                <label class="px-4">Password (demo123)</label>
                 <i class="bi bi-eye-slash pass-toggle-btn" onclick="togglePass('p', this)"></i>
             </div>
             <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm bg-theme">MASUK APLIKASI</button>
@@ -129,6 +143,43 @@ input, button, select, textarea {
   <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
   <div class="row">
+
+    <div id="mobileTopBar" class="d-md-none fixed-top bg-theme text-white shadow-sm px-3 d-flex justify-content-between align-items-center" style="height: 60px; z-index: 1030;">
+        <div class="fw-bold fs-5 text-truncate" style="max-width: 50%;"><i class="bi bi-book-half me-1"></i> SiBuk InSTal</div>
+        <div style="max-width: 45%;">
+            <select id="mobileSemester" class="form-select form-select-sm fw-bold border-0 text-primary shadow-sm" style="border-radius: 20px;" onchange="nav('nilai', null, this.value)">
+                <option value="" disabled selected>Pilih Smt</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="mobileBottomBar" class="d-md-none fixed-bottom bg-white shadow-lg d-flex justify-content-around align-items-center pb-2 pt-1" style="height: 70px; z-index: 1030; border-top: 1px solid #e3e6f0;">
+        <a href="javascript:void(0)" onclick="nav('dash', this)" class="text-center text-decoration-none m-nav-item active" data-target="dash">
+            <i class="bi bi-speedometer2 fs-4 d-block mb-1" style="line-height: 1;"></i><span style="font-size: 10px; font-weight: bold;">Dashboard</span>
+        </a>
+        <a href="javascript:void(0)" onclick="nav('siswa', this)" class="text-center text-decoration-none m-nav-item" data-target="siswa">
+            <i class="bi bi-people-fill fs-4 d-block mb-1" style="line-height: 1;"></i><span style="font-size: 10px; font-weight: bold;">Siswa</span>
+        </a>
+        <a href="javascript:void(0)" onclick="nav('mapel', this)" class="text-center text-decoration-none m-nav-item admin-only" data-target="mapel">
+            <i class="bi bi-book-half fs-4 d-block mb-1" style="line-height: 1;"></i><span style="font-size: 10px; font-weight: bold;">Mapel</span>
+        </a>
+        <a href="javascript:void(0)" onclick="nav('settings', this)" class="text-center text-decoration-none m-nav-item admin-only" data-target="settings">
+            <i class="bi bi-gear-fill fs-4 d-block mb-1" style="line-height: 1;"></i><span style="font-size: 10px; font-weight: bold;">Pengaturan</span>
+        </a>
+        <a href="javascript:void(0)" onclick="logout()" class="text-center text-decoration-none text-danger m-nav-item">
+            <i class="bi bi-box-arrow-right fs-4 d-block mb-1" style="line-height: 1;"></i><span style="font-size: 10px; font-weight: bold;">Logout</span>
+        </a>
+    </div>
+    
+    <button id="btnScrollTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="bi bi-arrow-up"></i></button>
+
+
     <div class="col-md-2 sidebar p-0 d-flex flex-column" id="mainSidebar">
         <div class="brand d-flex justify-content-between align-items-center">
             <span><i class="bi bi-book-half me-2"></i>SIBUK INSTAL</span>
@@ -250,12 +301,12 @@ input, button, select, textarea {
                             <form onsubmit="saveSettings(event)">
                                 <div class="row g-3">
                                     <div class="col-md-6"><label class="fw-bold small">Nama Instansi</label><input id="setInstansi" class="form-control" placeholder="PEMERINTAH ............"></div>
-                                    <div class="col-md-6"><label class="fw-bold small">Nama Sekolah</label><input id="setNama" class="form-control"></div>
+                                    <div class="col-md-6"><label class="fw-bold small">OPD / Dinas (Boleh dikosongkan)</label><input id="setOpd" class="form-control" placeholder="DINAS PENDIDIKAN........"></div>
+                                    <div class="col-md-12"><label class="fw-bold small">Nama Sekolah</label><input id="setNama" class="form-control"></div>
                                     <div class="col-12"><label class="fw-bold small">Alamat Lengkap</label><textarea id="setAlamat" class="form-control" rows="2"></textarea></div>
-                                    <div class="col-md-12"><label class="fw-bold small">OPD / Dinas (Boleh dikosongkan)</label><input id="setOpd" class="form-control" placeholder="DINAS PENDIDIKAN........"></div>
                                     <div class="col-md-4"><label class="fw-bold small">No. Telp Sekolah</label><input id="setTelp" class="form-control"></div>
-                                    <div class="col-md-4"><label class="fw-bold small">Email Sekolah</label><input id="setEmail" class="form-control"></div>
-                                    <div class="col-md-4"><label class="fw-bold small">Website Sekolah</label><input id="setWeb" class="form-control" placeholder="sman19nusantara.sch.id"></div>
+                                    <div class="col-md-4"><label class="fw-bold small">Email Sekolah</label><input id="setEmail" class="form-control" placeholder="contoh: email@gmail.com"></div>
+                                    <div class="col-md-4"><label class="fw-bold small">Website Sekolah</label><input id="setWeb" class="form-control" placeholder="contoh: sman19nusantara.sch.id"></div>
                                     <div class="col-md-6"><label class="fw-bold small">Kepala Sekolah</label><input id="setKepsek" class="form-control"></div>
                                     <div class="col-md-6"><label class="fw-bold small">NIP Kepala Sekolah</label><input id="setNip" class="form-control"></div>
                                     
@@ -301,7 +352,7 @@ input, button, select, textarea {
                                         <i class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
-                               <!-- <button type="submit" class="btn btn-sm btn-danger w-100 fw-bold">Update Admin</button> -->
+                              <!-- <button type="submit" class="btn btn-sm btn-danger w-100 fw-bold">Update Admin</button> -->
                             </form>
                             <form onsubmit="updateAccount(event, 'wakakurikulum')" class="p-3 bg-light border rounded">
                                 <h6 class="fw-bold small text-uppercase">Waka Kurikulum</h6>
@@ -312,7 +363,7 @@ input, button, select, textarea {
                                         <i class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
-                               <!-- <button type="submit" class="btn btn-sm btn-success w-100 fw-bold">Update Waka</button> -->
+                               <!--<button type="submit" class="btn btn-sm btn-success w-100 fw-bold">Update Waka</button> -->
                             </form>
                         </div>
                     </div>
@@ -525,7 +576,14 @@ function refreshPage() { if(curPage == 'siswa') loadSiswa(); else if(curPage == 
 
 function nav(page, el, param) { 
     curPage = page; 
+    
+    // Ubah status aktif di menu laptop/PC
     if(el) { $('.sidebar a').removeClass('active'); $(el).addClass('active'); } 
+    
+    // Ubah status aktif di menu HP
+    $('.m-nav-item').removeClass('active');
+    $(`.m-nav-item[data-target='${page}']`).addClass('active');
+    
     if($(window).width() < 768) { $('#mainSidebar').removeClass('show'); $('.sidebar-overlay').removeClass('show'); }
     $('[id^=view-]').addClass('hidden'); $('#view-'+page).removeClass('hidden'); 
     
@@ -537,6 +595,7 @@ function nav(page, el, param) {
     if(page=='nilai') { 
         curSmt=param; 
         $('#judulNilai').text('Input Nilai Semester '+param); 
+        $('#mobileSemester').val(param); // Sync dropdown HP
         
         const s = $('#selSiswa').empty().append('<option value="">-- Pilih --</option>'); 
         globalSiswa.forEach(x => s.append(`<option value="${x[0]}">${x[0]} - ${x[2]}</option>`)); 
@@ -719,16 +778,16 @@ async function cetakPDF(nis) {
         <div style="font-family: 'Arial', sans-serif; font-size: 11pt; color: #000; background: #fff;">
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
-                    <td width="15%" align="center">${imgInstansi ? `<img src="${imgInstansi}" style="width: 2.5cm;">` : ''}</td>
-                    <td width="70%" style="text-align: center; line-height: 1.2;">
-                        <div style="font-size:14pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_instansi || ''}</div>
-                        ${globalConf.opd_dinas ? `<div style="font-size:14pt; font-weight:bold; text-transform:uppercase;">${globalConf.opd_dinas}</div>` : ''}
-                        <div style="font-size:17pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_sekolah || ''}</div>
-                        <div style="font-size:9pt;">${globalConf.alamat_sekolah || ''}</div>
-                        <div style="font-size:9pt;">Telp: ${globalConf.telp_sekolah || '-'} | Email: ${globalConf.email_sekolah || '-'} | Web: ${globalConf.web_sekolah || '-'}</div>
-                    </td>
-                    <td width="15%" align="center">${imgSekolah ? `<img src="${imgSekolah}" style="width: 2.5cm;">` : ''}</td>
-                </tr>
+              <td width="15%" align="center" style="vertical-align: middle;">${imgInstansi ? `<img src="${imgInstansi}" style="width: 2cm; max-width: 100%; object-fit: contain;">` : ''}</td>
+                <td width="70%" style="text-align: center; line-height: 1.3;">
+                <div style="font-size:14pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_instansi || ''}</div>
+                 ${globalConf.opd_dinas ? `<div style="font-size:14pt; font-weight:bold; text-transform:uppercase;">${globalConf.opd_dinas}</div>` : ''}
+                <div style="font-size:17pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_sekolah || ''}</div>
+                <div style="font-size:9pt;">${globalConf.alamat_sekolah || ''}</div>
+                <div style="font-size:8pt;">Telp: ${globalConf.telp_sekolah || '-'}  |  Email: ${globalConf.email_sekolah || '-'}  |  Web: ${globalConf.web_sekolah || '-'}</div>
+               </td>
+            <td width="15%" align="center" style="vertical-align: middle;">${imgSekolah ? `<img src="${imgSekolah}" style="width: 2cm; max-width: 100%; object-fit: contain;">` : ''}</td>
+           </tr>
             </table>
             <div style="border-bottom: 3px double #000; margin: 10px 0 20px 0;"></div>
             <div style="text-align:center; font-weight:bold; text-decoration:underline; font-size:14pt; margin-bottom:20px;">LEMBAR BUKU INDUK SISWA</div>
@@ -774,7 +833,7 @@ async function cetakPDF(nis) {
     // --- PENGATURAN MARGIN ADA DI SINI ---
     // margin: [Atas, Kanan, Bawah, Kiri] (Semua dalam satuan CM)
     var opt = { 
-        margin: [0.3, 1.5, 1, 1.5], // <--- Silakan ubah angka ini sesuai keinginanmu
+        margin: [0.5, 1.4, 1, 1.4], // <--- Silakan ubah angka ini sesuai keinginanmu
         filename: 'Biodata_' + s[2] + '.pdf', 
         image: { type: 'jpeg', quality: 0.98 }, 
         html2canvas: { scale: 2 }, 
@@ -814,17 +873,17 @@ async function cetakTranskrip() {
             </style>
             
             <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                    <td width="20%" align="right">${imgInstansi ? `<img src="${imgInstansi}" style="width: 2.5cm;">` : ''}</td>
-                    <td width="60%" style="text-align: center; line-height: 1.2;">
-                        <div style="font-size:12pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_instansi || ''}</div>
-                        ${globalConf.opd_dinas ? `<div style="font-size:12pt; font-weight:bold; text-transform:uppercase;">${globalConf.opd_dinas}</div>` : ''}
-                        <div style="font-size:16pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_sekolah || ''}</div>
-                        <div style="font-size:9pt;">${globalConf.alamat_sekolah || ''}</div>
-                        <div style="font-size:9pt;">Telp: ${globalConf.telp_sekolah || '-'} | Email: ${globalConf.email_sekolah || '-'} | Web: ${globalConf.web_sekolah || '-'}</div>
-                    </td>
-                    <td width="20%" align="left">${imgSekolah ? `<img src="${imgSekolah}" style="width: 2.5cm;">` : ''}</td>
-                </tr>
+            <tr>
+              <td width="15%" align="center" style="vertical-align: middle;">${imgInstansi ? `<img src="${imgInstansi}" style="width: 2.2cm; max-width: 100%; object-fit: contain;">` : ''}</td>
+                <td width="70%" style="text-align: center; line-height: 1.2;">
+                <div style="font-size:14pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_instansi || ''}</div>
+                 ${globalConf.opd_dinas ? `<div style="font-size:14pt; font-weight:bold; text-transform:uppercase;">${globalConf.opd_dinas}</div>` : ''}
+                <div style="font-size:17pt; font-weight:bold; text-transform:uppercase;">${globalConf.nama_sekolah || ''}</div>
+                <div style="font-size:9pt;">${globalConf.alamat_sekolah || ''}</div>
+                <div style="font-size:9pt;">Telp: ${globalConf.telp_sekolah || '-'} | Email: ${globalConf.email_sekolah || '-'} | Web: ${globalConf.web_sekolah || '-'}</div>
+               </td>
+            <td width="15%" align="center" style="vertical-align: middle;">${imgSekolah ? `<img src="${imgSekolah}" style="width: 2.2cm; max-width: 100%; object-fit: contain;">` : ''}</td>
+           </tr>
             </table>
             <hr style="border:1px solid #000; margin: 10px 0;">
             <div style="text-align:center; font-weight:bold; margin:10px 0; font-size:12pt;">TRANSKRIP NILAI KOMPREHENSIF</div>
@@ -835,7 +894,7 @@ async function cetakTranskrip() {
             <table class="tabel-nilai">
                 <thead>
                     <tr style="background-color:#eee;">
-                        <th rowspan="2" width="15%" style="text-align:top;">Mata Pelajaran</th>
+                        <th rowspan="2" width="15%" style="vertical-align: middle; padding-bottom: 5px;">Mata Pelajaran</th>
                         <th colspan="3">Smt 1</th><th colspan="3">Smt 2</th><th colspan="3">Smt 3</th>
                         <th colspan="3">Smt 4</th><th colspan="3">Smt 5</th><th colspan="3">Smt 6</th>
                     </tr>
@@ -964,6 +1023,7 @@ function loadSettings() {
         
         if(s.theme_color) document.documentElement.style.setProperty('--primary-color', s.theme_color); 
         if(s.nama_instansi) { $('#lblInstansi').text(s.nama_instansi); $('#dashInstansi').text(s.nama_instansi); $('#setInstansi').val(s.nama_instansi); } 
+        if(s.opd_dinas) { $('#lblOpdLogin').text(s.opd_dinas); } else { $('#lblOpdLogin').text(''); }
         if(s.nama_sekolah) { $('#lblSekolah').text(s.nama_sekolah); $('#dashName').text(s.nama_sekolah); $('#footSchoolName').text(s.nama_sekolah); $('#setNama').val(s.nama_sekolah); } 
         if(s.alamat_sekolah) { $('#dashAddr').text(s.alamat_sekolah); $('#setAlamat').val(s.alamat_sekolah); } 
         $('#setKepsek').val(s.nama_kepsek); $('#setNip').val(s.nip_kepsek); $('#setTheme').val(s.theme_color || '#4e73df'); 
@@ -1155,6 +1215,16 @@ const pengamatLoader = new MutationObserver((mutations) => {
 
 // Mulai mengawasi si Loader
 pengamatLoader.observe(elemenLoader, { attributes: true });
+
+// --- LOGIKA TOMBOL SCROLL TO TOP ---
+window.onscroll = function() {
+    // Munculkan tombol jika pengguna scroll lebih dari 100px ke bawah
+    if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        document.getElementById("btnScrollTop").style.display = "flex";
+    } else {
+        document.getElementById("btnScrollTop").style.display = "none";
+    }
+};
 
 </script>
 </body>
