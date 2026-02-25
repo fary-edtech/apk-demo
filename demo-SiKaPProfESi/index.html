@@ -127,8 +127,12 @@ body { background: var(--light); color: var(--dark); font-size: 13px; }
 .login-footer { position: relative; z-index: 10; margin-top: 30px; text-align: center; color: rgba(255,255,255,0.6); font-size: 11px; }
 
 /* --- DASHBOARD SISWA PREMIUM STYLE --- */
-.std-header { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px 0; position: sticky; top: 0; z-index: 50; }
-.std-header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+
+   
+.std-header { width: 100%; overflow-x: hidden; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px 0; position: sticky; top: 0; z-index: 50; }
+.std-container { width: 100%; padding: 0 15px; padding-bottom: 80px; margin-top: 20px; }
+.std-header-container { width: 100%; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: padding: 10px 15px;}
+.bio-table-responsive { padding: 15px; overflow-x: auto; } /* Mencegah tabel mendorong layar */
 /* Struktur Header Baru yang Stabil */
 .std-brand { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; }
 .header-logo { height: 50px; width: auto; object-fit: contain; }
@@ -183,8 +187,10 @@ body { background: var(--light); color: var(--dark); font-size: 13px; }
 .info-table-new { width: 100%; color: #000; }
 .info-table-new td { padding: 1px 0px; vertical-align: top; font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 400; line-height: 1; }
 .info-table-new .lbl { width: 60px; }
-.qr-area-new { position: absolute; bottom: 3px; right: 0px; background: white; padding: 3px; border: 0px solid #ccc; }
-.qrcode img { width: 200px; height: 200px; object-fit: contain; }
+/* Mengatur posisi jarak dari bawah dan kanan (misal kita buat jarak 5px dari tepi) */
+.qr-area-new { position: absolute; bottom: 5px; right: 5px; background: white; padding: 2px; border: 0px solid #ccc; }
+/* Mengatur ukuran tampilannya, silakan ubah 75px menjadi lebih besar/kecil sesuai selera */
+#qrcode img { width: 100px; height: 100px; display:block; }
 .loader-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
 .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -1081,7 +1087,7 @@ function viewCard(row, role) {
    
    var logo1 = document.getElementById('card-logo-instansi'), logo2 = document.getElementById('card-logo-sekolah'), bgBack = document.getElementById('card-bg-back');
    logo1.style.display = 'none'; logo2.style.display = 'none'; bgBack.src = DEFAULT_IMG;
-   new QRCode(document.getElementById("qrcode"), {text: String(d.nisn), width:60, height:60});
+   new QRCode(document.getElementById("qrcode"), {text: String(d.nisn), width:100, height:100});
    
    apiCall('getSemuaGambarKartu', {fotoUrl: d.foto_url, bgDepan: settings.Background_Kartu, bgBelakang: settings.Background_Belakang, logoInstansi: settings.Logo_Instansi, logoSekolah: settings.Logo_Sekolah}, res => {
        clearInterval(intervalCard);
