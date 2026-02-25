@@ -153,6 +153,17 @@ body { background: var(--light); color: var(--dark); font-size: 13px; overflow-x
 .bio-table .section-row td { background: #f8fafc; color: var(--primary); font-size: 12px; font-weight: 700; padding: 10px 15px; letter-spacing: 0.5px; border-bottom: none; padding-top: 20px; }
 
 /* --- CARD ID --- */
+/* Mencegah browser HP membesarkan huruf secara otomatis (Font Boosting) */
+.id-card, .id-card * {
+    -webkit-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+}
+
+/* Memastikan jarak baris teks tidak melebar di HP */
+.info-table-new td {
+    line-height: 1.1 !important;
+}
 .id-card { width: 400px; height: 250px; background: white; position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin: 0 auto; font-family: Arial, sans-serif; }
 .card-bg-gradient { position: absolute; inset: 0; background: linear-gradient(120deg, var(--primary) 35%, #fff 35.5%); z-index: 1; }
 .card-bg-img { position: absolute; inset: 0; background-size: cover; background-position: center; z-index: 2; opacity: 1; }
@@ -176,7 +187,7 @@ body { background: var(--light); color: var(--dark); font-size: 13px; overflow-x
 /* Mengatur posisi jarak dari bawah dan kanan (misal kita buat jarak 5px dari tepi) */
 .qr-area-new { position: absolute; bottom: 3px; right: 3px; background: white; padding: 1px; border: 0px solid #ccc; }
 /* Mengatur ukuran tampilannya, silakan ubah 75px menjadi lebih besar/kecil sesuai selera */
-#qrcode img { width: 95px; height: 95px; display:block; }
+#qrcode img { width: 90px; height: 90px; display:block; }
 
 .loader-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
 .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -1095,7 +1106,7 @@ function viewCard(row, role) {
    
    var logo1 = document.getElementById('card-logo-instansi'), logo2 = document.getElementById('card-logo-sekolah'), bgBack = document.getElementById('card-bg-back');
    logo1.style.display = 'none'; logo2.style.display = 'none'; bgBack.src = DEFAULT_IMG;
-   new QRCode(document.getElementById("qrcode"), {text: String(d.nisn), width:95, height:95});
+   new QRCode(document.getElementById("qrcode"), {text: String(d.nisn), width:90, height:90});
    
    apiCall('getSemuaGambarKartu', {fotoUrl: d.foto_url, bgDepan: settings.Background_Kartu, bgBelakang: settings.Background_Belakang, logoInstansi: settings.Logo_Instansi, logoSekolah: settings.Logo_Sekolah}, res => {
        clearInterval(intervalCard);
