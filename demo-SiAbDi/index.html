@@ -1,4 +1,3 @@
-//https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbzQmqx3t3WSzvgtsh_nPw9MytdQGmZ6c4YnQHXPaMjpJ0lP80Y1vvL3uview-mo4uY8ZPFBxh4/exec
 
 <!DOCTYPE html>
 <html lang="id">
@@ -413,10 +412,10 @@ input, button, select, textarea {
                               <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-family: Arial, sans-serif;">
                                   <thead>
                                       <tr style="background-color: #e5e7eb;">
-                                          <th style="border: 1px solid #000; padding: 2px 4px 8px 4px; width: 40px; text-align: center; font-size: 11px;">No</th>
-                                          <th style="border: 1px solid #000; padding: 2px 4px 8px 4px; width: 200px; text-align: center; font-size: 11px;">Tanggal / Hari</th>
-                                          <th style="border: 1px solid #000; padding: 2px 4px 8px 4px; width: 100px; text-align: center; font-size: 11px;">Status</th>
-                                          <th style="border: 1px solid #000; padding: 2px 4px 8px 4px; text-align: center; font-size: 11px;">Keterangan</th>
+                                          <th style="border: 1px solid #000; padding: 0px 4px 12px 4px; width: 40px; text-align: center; font-size: 11px;">No</th>
+                                          <th style="border: 1px solid #000; padding: 0px 4px 12px 4px; width: 150px; text-align: center; font-size: 11px;">Tanggal / Hari</th>
+                                          <th style="border: 1px solid #000; padding: 0px 4px 12px 4px; width: 100px; text-align: center; font-size: 11px;">Status</th>
+                                          <th style="border: 1px solid #000; padding: 0px 4px 12px 4px; text-align: center; font-size: 11px;">Keterangan</th>
                                       </tr>
                                   </thead>
                                   <tbody id="printTbodyRekapSiswa"></tbody>
@@ -2211,14 +2210,14 @@ async function downloadPDFRekapSiswa() {
         document.getElementById('printSiswaPeriode').textContent = `${blnText} ${thnText}`;
 
 
-    // Isi Tabel Print (Mengakali bug html2canvas menggunakan padding asimetris & font Arial)
+    // Isi Tabel Print
         const tbodyPrint = document.getElementById('printTbodyRekapSiswa');
         tbodyPrint.innerHTML = rs_currentData.map((d, i) => `
             <tr>
-                <td style="border: 1px solid #000; padding: 2px 4px 8px 4px; text-align: center; font-size: 11px;">${i+1}</td>
-                <td style="border: 1px solid #000; padding: 2px 4px 8px 4px; text-align: center; font-size: 11px;">${new Date(d.tanggal).toLocaleDateString('id-ID', {weekday:'long', day: 'numeric', month: 'long', year: 'numeric'})}</td>
-                <td style="border: 1px solid #000; padding: 2px 4px 8px 4px; text-align: center; font-weight: bold; font-size: 11px;">${d.status}</td>
-                <td style="border: 1px solid #000; padding: 2px 4px 8px 4px; text-align: center; font-size: 11px;">${d.keterangan || '-'}</td>
+                <td style="border: 1px solid #000; padding: 0px 4px 12px 4px; text-align: center; font-size: 11px;">${i+1}</td>
+                <td style="border: 1px solid #000; padding: 0px 4px 12px 4px; text-align: center; font-size: 11px;">${new Date(d.tanggal).toLocaleDateString('id-ID', {weekday:'long', day: 'numeric', month: 'long', year: 'numeric'})}</td>
+                <td style="border: 1px solid #000; padding: 0px 4px 12px 4px; text-align: center; font-weight: bold; font-size: 11px;">${d.status}</td>
+                <td style="border: 1px solid #000; padding: 0px 4px 12px 4px; text-align: center; font-size: 11px;">${d.keterangan || '-'}</td>
             </tr>
         `).join('');
 
