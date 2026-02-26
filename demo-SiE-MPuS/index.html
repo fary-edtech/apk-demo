@@ -117,14 +117,12 @@ input, button, select, textarea {
       
       .w-md-25 { width: 25%; }
       @media (max-width: 768px) { .w-md-25 { width: 100%; } }
-</style>
 
-    <style>
-  /* Tombol Scroll ke Atas */
-  #btn-back-to-top {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
+/* Naikkan tombol scroll to top di layar HP */
+    #btn-back-to-top {
+        bottom: 85px !important; 
+        right: 20px !important;
+
     display: none; /* Tersembunyi default */
     z-index: 1050; /* Di atas elemen lain */
     width: 45px;
@@ -1663,6 +1661,7 @@ function exportData(type) {
 
 function printLabel(kode, judul) {
     const htmlPreview = '<div style="display:flex;justify-content:center;padding:10px;"><div class="book-label-preview" style="width:250px;height:150px;background:#fff;border:2px solid #333;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;"><div style="font-weight:bold;font-size:14px;margin-bottom:5px;line-height:1.2;max-height:40px;overflow:hidden;">' + judul + '</div><div style="font-size:12px;margin-top:5px;background:#000;color:#fff;padding:2px 8px;border-radius:4px;">' + kode + '</div><div id="qrcode-book" style="margin-top:10px;"></div></div></div>';
+    
     Swal.fire({ 
         title: 'Preview', 
         html: htmlPreview, 
@@ -1671,10 +1670,21 @@ function printLabel(kode, judul) {
         didOpen: () => { new QRCode(document.getElementById("qrcode-book"), { text: kode, width: 70, height: 70 }); } 
     }).then((r) => { 
         if(r.isConfirmed) { 
+            // --- FIX BUG QR CODE CETAK ---
+            const qrBox = document.getElementById("qrcode-book");
+            const canvas = qrBox.querySelector('canvas');
+            const img = qrBox.querySelector('img');
+            if (canvas && img) {
+                img.src = canvas.toDataURL("image/png");
+                img.style.display = "block"; 
+                canvas.style.display = "none"; 
+            }
+            // -----------------------------
+
             var win = window.open('','','height=500,width=500'); 
-            win.document.write('<html><head><title>Print</title></head><body>'+document.querySelector('.book-label-preview').outerHTML+'</body></html>'); 
+            win.document.write('<html><head><title>Cetak Label</title></head><body style="padding:20px;">'+document.querySelector('.book-label-preview').outerHTML+'</body></html>'); 
             win.document.close(); 
-            win.print(); 
+            setTimeout(() => { win.print(); }, 400);
         } 
     });
 }
@@ -1683,9 +1693,8 @@ function printCard(id) {
     const m = memberData.find(x => x[0] == id); if (!m) return;
     const nama = m[1]; const jk = m[3] == 'L' ? 'Laki-laki' : 'Perempuan'; const tgl = m[4] ? new Date(m[4]).toLocaleDateString('id-ID') : '-';
     const sekolah = document.getElementById('sidebar-school-name').innerText || 'Perpus'; 
-    const logo = globalLogoUrl || 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png'; // Fallback aman
+    const logo = globalLogoUrl || 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png'; 
     
-    // KUNCI PERBAIKAN 2: Tambahkan crossorigin="anonymous" di tag img agar tidak diblokir saat dicetak
     const htmlPreview = '<div style="display:flex;justify-content:center;padding:10px;"><div class="id-card-preview" style="width:320px;height:200px;background:#f8f9fa;border:1px solid #ddd;border-radius:15px;overflow:hidden;text-align:left;position:relative;"><div style="background:#4361ee;height:50px;display:flex;align-items:center;padding:0 15px;color:white;"><img src="' + logo + '" crossorigin="anonymous" style="height:35px;width:35px;background:#fff;border-radius:50%;padding:2px;margin-right:10px;"><div style="font-weight:bold;font-size:13px;">' + sekolah + '</div></div><div style="padding:15px;display:flex;justify-content:space-between;"><div style="flex:1;"><h3 style="margin:0 0 5px;font-size:16px;">' + nama + '</h3><p style="font-size:11px;color:#666;margin:0;">ID: <b>' + id + '</b></p><p style="font-size:11px;color:#666;margin:0;">' + jk + '</p><p style="font-size:11px;color:#666;margin:0;">Lahir: ' + tgl + '</p></div><div id="qrcode-mem"></div></div><div style="position:absolute;bottom:10px;width:100%;text-align:center;font-size:10px;font-weight:bold;color:#4361ee;">KARTU PERPUSTAKAAN DIGITAL</div></div></div>';
     
     Swal.fire({ 
@@ -1695,10 +1704,21 @@ function printCard(id) {
         didOpen: () => { new QRCode(document.getElementById("qrcode-mem"), { text: id, width: 65, height: 65 }); } 
     }).then(r => { 
         if(r.isConfirmed) { 
+            // --- FIX BUG QR CODE CETAK ---
+            const qrBox = document.getElementById("qrcode-mem");
+            const canvas = qrBox.querySelector('canvas');
+            const img = qrBox.querySelector('img');
+            if (canvas && img) {
+                img.src = canvas.toDataURL("image/png");
+                img.style.display = "block"; // Tampilkan gambar
+                canvas.style.display = "none"; // Sembunyikan canvas
+            }
+            // -----------------------------
+
             var win = window.open('','','height=500,width=500'); 
-            win.document.write('<html><head><title>Card</title></head><body>'+document.querySelector('.id-card-preview').outerHTML+'</body></html>'); 
+            win.document.write('<html><head><title>Cetak Kartu</title></head><body style="padding:20px;">'+document.querySelector('.id-card-preview').outerHTML+'</body></html>'); 
             win.document.close(); 
-            win.print(); 
+            setTimeout(() => { win.print(); }, 400); // Beri waktu gambar merender sebelum cetak
         } 
     });
 }
