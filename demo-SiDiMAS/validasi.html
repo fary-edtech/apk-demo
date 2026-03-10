@@ -131,7 +131,8 @@
             
             // Format Nomor Surat (Tambahkan <wbr> untuk memotong baris)
             document.getElementById('v-nomor').innerHTML = data.noSurat.split('/').join('/<wbr>');
-            document.getElementById('v-waktu').innerText = data.waktuTtd;
+            // Memaksa tulisan <br> (jika terbaca sebagai teks) agar diubah menjadi garis baru sungguhan
+            document.getElementById('v-waktu').innerHTML = data.waktuTtd.replace("&lt;br&gt;", "<br>");
             
             document.getElementById('btn-pdf').href = data.fileUrl;
         }
