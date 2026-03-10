@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <title>Demo SiDiMAS TTE</title>
+    <title>Demo SiDiMAS</title>
     <link rel="icon" type="image/png" href="./imgsidimas.png">
 
 
@@ -196,7 +196,13 @@ input, button, select, textarea {
                         <div class="col-md-4"><label>Kode Lembaga</label><input class="form-control" id="inpKodeSekolah" placeholder="loading..." onkeyup="updatePreview()" readonly style="background-color: #e9ecef;"></div>
                      </div>
                      <div class="preview-box" id="previewNomor">autoload...</div><input type="hidden" name="nomorFull" id="nomorFull">
-                     <div class="row mb-3"><div class="col-md-6"><label>Tempat Titimangsa</label><input name="tempatTitimangsa" class="form-control" placeholder="Contoh: Bungo" required></div><div class="col-md-6"><label>Tanggal Surat</label><input type="date" class="form-control" id="inpTglSurat" onchange="updateTanggalSurat()" required><input type="hidden" name="tanggalSuratFull" id="tanggalSuratFull"></div></div>
+                     <div class="row mb-3">
+                      <div class="col-md-12">
+                       <label>Tanggal Surat</label>
+                       <input type="date" class="form-control" id="inpTglSurat" onchange="updateTanggalSurat()" required>
+                        <input type="hidden" name="tanggalSuratFull" id="tanggalSuratFull">
+                       </div>
+                      </div>
                  
                      <h6 class="text-secondary border-bottom pb-2 mt-4">2. Isi Surat</h6>
                      <div id="box-umum" class="form-box">
@@ -515,7 +521,7 @@ input, button, select, textarea {
   <script>
   /* --- KONFIGURASI API (URL DARI GOOGLE APPS SCRIPT) --- */
   // NANTI GANTI LINK DI BAWAH INI DENGAN LINK HASIL DEPLOY APPS SCRIPT KAMU
-  const API_URL = "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbx6a2w3nmWWsljUGfdMfY5gIzQh_5VknxMuYcqWgjuZW90M4ghFeCv7gXGNDXUxKKGL/exec"; 
+  const API_URL = "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbyC3g6f4z1sKB8dZaHpLtQUvGX0EDEAizdVSqjG4RuLjdRf1DaH2rEVZkAJNZGs675b/exec"; 
 
   /* --- FUNGSI JEMBATAN PENGHUBUNG (FETCH API) --- */
   async function apiCall(actionName, payloadData = {}) {
@@ -1048,44 +1054,58 @@ function refreshDrafts() {
     if($.fn.DataTable.isDataTable('#tDraft')) { $('#tDraft').DataTable().destroy(); }
     $('#tDraft').html('<tbody><tr><td colspan="6" class="text-center p-4"><div class="spinner-border text-warning"></div></td></tr></tbody>');
 
-    const role = localStorage.getItem('sidimas_role');
-    apiCall('getDrafts', { role: role, user: localStorage.getItem('sidimas_user') }).then(data => {
+    apiCall('getDrafts', { role: localStorage.getItem('sidimas_role'), user: localStorage.getItem('sidimas_user') }).then(data => {
         const cols = [
             {title:"ID", data: "id", visible:false},
             {title:"Tgl Usulan", data: "wkt"},
             {title:"Pembuat", data: "pembuat", render: d => `<span class="badge bg-secondary">${d}</span>`},
             {title:"Nomor & Perihal", render: (d,t,r) => `<b>${r.no}</b><br>${r.perihal}`},
             {title:"Jenis usulan", data: "jenisTtd"},
-            {title:"Aksi Keputusan", render: (d,t,r) => renderAksiDraft(r.id)}
+            // PERHATIKAN: Kita mem-passing id, pembuat, dan catatan ke fungsi render
+            {title:"Aksi", render: (d,t,r) => renderAksiDraft(r.id, r.pembuat, r.catatan)}
         ];
-        
-        $('#tDraft').DataTable({ 
-            data: data, columns: cols, scrollX: true, destroy: true, 
-            language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json" }, 
-            order: [[1,'asc']] 
-        });
+        $('#tDraft').DataTable({ data: data, columns: cols, scrollX: true, destroy: true, language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json" }, order: [[1,'asc']] });
     });
 }
 
-function renderAksiDraft(id) {
+function renderAksiDraft(id, pembuat, catatan) {
+    const encCatatan = encodeURIComponent(catatan || '');
     return `
     <div class="d-flex gap-1">
+        <button class="btn btn-sm btn-dark" onclick="cekStatusAdmin('${encCatatan}')" title="Info Status"><i class="fas fa-info-circle"></i></button>
         <button class="btn btn-sm btn-info text-white" onclick="lihatPreview('${id}')" title="Pratinjau"><i class="fas fa-eye"></i></button>
-        <button class="btn btn-sm btn-danger" onclick="prosesDraft('${id}', 'Tolak')" title="Tolak"><i class="fas fa-times"></i></button>
-        <button class="btn btn-sm btn-secondary" onclick="opsiCetakAdmin('${id}')" title="Cetak"><i class="fas fa-print"></i></button>
+        <button class="btn btn-sm btn-danger" onclick="prosesDraft('${id}', 'Tolak')" title="Hapus"><i class="fas fa-times"></i></button>
+        <button class="btn btn-sm btn-secondary" onclick="opsiCetakAdmin('${id}', '${pembuat}')" title="Cetak"><i class="fas fa-print"></i></button>
         <button class="btn btn-sm btn-success" onclick="prosesDraft('${id}', 'TeruskanTTE')" title="TTE"><i class="fas fa-check-double"></i></button>
     </div>`;
 }
 
-function opsiCetakAdmin(id) {
+// Fungsi Pop-Up Info Status Admin
+function cekStatusAdmin(encCat) {
+    const catatan = decodeURIComponent(encCat);
+    if (catatan.trim() === "") {
+        Swal.fire('Status Dokumen', '<b>Draft Awal / Normal</b><br>Belum ada catatan revisi dari Kepala Sekolah.', 'info');
+    } else {
+        Swal.fire({
+            title: 'Dikembalikan Oleh Kepsek', 
+            html: `<div class="text-start"><b>Catatan Revisi Kepsek:</b><br><div class="p-3 bg-danger bg-opacity-10 border border-danger rounded mt-2 text-danger"><i>"${catatan}"</i></div></div>`, 
+            icon: 'warning'
+        });
+    }
+}
+
+function opsiCetakAdmin(id, pembuat) {
+    const isBuatanAdminSendiri = (pembuat === localStorage.getItem('sidimas_user'));
+
     Swal.fire({
         title: 'Opsi Cetak Surat',
         text: 'Pilih tindakan untuk dokumen ini:',
         icon: 'question',
-        showDenyButton: true, showCancelButton: true,
-        confirmButtonText: '<i class="fas fa-print"></i> Cetak Langsung (PDF/Word)',
+        showDenyButton: !isBuatanAdminSendiri, // Jika buat sendiri, sembunyikan tombol kembalikan
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-print"></i> Cetak PDF/Word',
         confirmButtonColor: '#0d6efd',
-        denyButtonText: '<i class="fas fa-reply"></i> Cetak Oleh Staf (Kembalikan)',
+        denyButtonText: '<i class="fas fa-reply"></i> Cetak Oleh Staf',
         denyButtonColor: '#6c757d',
         cancelButtonText: 'Batal'
     }).then((r) => {
@@ -1099,6 +1119,7 @@ function prosesDraft(id, aksi) {
     if(aksi === 'Tolak') teksKonfirmasi = "Draft ini akan dihapus secara permanen. Lanjutkan?";
     if(aksi === 'CetakManual') teksKonfirmasi = "Surat akan dicetak menjadi Word/PDF tanpa TTE. Lanjutkan?";
     if(aksi === 'TeruskanTTE') teksKonfirmasi = "Surat akan diteruskan ke Kepsek untuk di Tanda Tangani secara Digital. Lanjutkan?";
+    if(aksi === 'KirimKeAdmin') teksKonfirmasi = "Kirim draft ini ke Admin untuk dicek?";
 
     Swal.fire({ 
         title: 'Konfirmasi Aksi', text: teksKonfirmasi, icon: 'question', 
@@ -1144,13 +1165,37 @@ function refreshKepsek() {
             {title:"Aksi", render: (d,t,r) => `
                 <div class="d-flex gap-1">
                     <button class="btn btn-sm btn-info text-white" onclick="lihatPreview('${r.id}')" title="Pratinjau"><i class="fas fa-eye"></i></button>
-                    <button class="btn btn-sm btn-warning" onclick="prosesDraft('${r.id}', 'KembalikanAdmin')" title="Kembalikan ke Admin"><i class="fas fa-reply"></i></button>
+                    <button class="btn btn-sm btn-warning" onclick="kembalikanKepsek('${r.id}')" title="Kembalikan ke Admin"><i class="fas fa-reply"></i></button>
                     <button class="btn btn-sm btn-success fw-bold" onclick="prosesTtd('${r.id}')" title="TTE"><i class="fas fa-pen-nib"></i></button>
                 </div>
             `}
         ];
         
         $('#tKepsek').DataTable({ data: data, columns: cols, scrollX: true, destroy: true, language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json" }, order: [[1,'asc']] });
+    });
+}
+
+function kembalikanKepsek(id) {
+    Swal.fire({
+        title: 'Kembalikan ke Admin',
+        text: 'Berikan catatan revisi atau alasan penolakan:',
+        input: 'textarea',
+        inputPlaceholder: 'Tuliskan catatan di sini...',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Kirim Kembali',
+        cancelButtonText: 'Batal',
+        inputValidator: (value) => {
+            if (!value) return 'Catatan wajib diisi!';
+        }
+    }).then(res => {
+        if(res.isConfirmed) {
+            showLoadingTimer('Memproses...');
+            apiCall('aksiDraft', { id: id, aksi: 'KembalikanAdmin', role: localStorage.getItem('sidimas_role'), catatan: res.value }).then(r => {
+                if(r.success) { Swal.fire('Berhasil', r.message, 'success'); refreshKepsek(); }
+                else { Swal.fire('Gagal', r.message, 'error'); }
+            });
+        }
     });
 }
 
@@ -1200,14 +1245,22 @@ function refreshHasil() {
     if($.fn.DataTable.isDataTable('#tHasil')) { $('#tHasil').DataTable().destroy(); }
     $('#tHasil').html('<tbody><tr><td colspan="5" class="text-center p-4"><div class="spinner-border text-info"></div></td></tr></tbody>');
 
-    const role = localStorage.getItem('sidimas_role');
-    const user = localStorage.getItem('sidimas_user');
-    apiCall('getDrafts', { role: role, user: user }).then(data => {
+    apiCall('getDrafts', { role: localStorage.getItem('sidimas_role'), user: localStorage.getItem('sidimas_user') }).then(data => {
         const cols = [
             {title:"ID", data: "id", visible:false},
-            {title:"Disetujui Tanggal", data: "wkt"},
+            {title:"Tanggal", data: "wkt"},
             {title:"Nomor & Perihal", render: (d,t,r) => `<b>${r.no}</b><br>${r.perihal}`},
-           {title:"Aksi", render: (d,t,r) => `<button class="btn btn-sm btn-success fw-bold" onclick="unduhDokumenStaf('${r.id}')"><i class="fas fa-file-download"></i> Unduh Dokumen</button>`}
+            {title:"Status", render: (d,t,r) => r.status === 'Draft Staf' ? `<span class="badge bg-secondary">Draft Awal</span>` : `<span class="badge bg-warning text-dark">Siap Cetak</span>`},
+            {title:"Aksi", render: (d,t,r) => {
+                if (r.status === 'Draft Staf') {
+                    return `<div class="d-flex gap-1">
+                               <button class="btn btn-sm btn-info text-white fw-bold" onclick="lihatPreview('${r.id}')"><i class="fas fa-eye"></i> Lihat</button>
+                               <button class="btn btn-sm btn-primary fw-bold" onclick="prosesDraft('${r.id}', 'KirimKeAdmin')"><i class="fas fa-paper-plane"></i> Kirim Ke Admin</button>
+                            </div>`;
+                } else {
+                    return `<button class="btn btn-sm btn-success fw-bold" onclick="unduhDokumenStaf('${r.id}')"><i class="fas fa-file-download"></i> Unduh File</button>`;
+                }
+            }}
         ];
         $('#tHasil').DataTable({ data: data, columns: cols, scrollX: true, destroy: true, language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json" }, order: [[1,'asc']] });
     });
