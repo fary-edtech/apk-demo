@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demo SiLaDuMas</title>
+  <title>Sistem Layanan Pengaduan Masyarakat</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -738,7 +740,7 @@
   <script> 
     // GANTI URL INI DENGAN URL DEPLOY WEB APP GAS ANDA YANG BARU
     const API_URL = "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycby7Eh5DEClvRb9bLQ9Xp1QndDp2lUjm_HKQ4lU66o5fdOTUdVFdCFpkufU_L5Y1AzhZWQ/exec"; 
-   
+    
     let GLOBAL_CONFIG = {}; 
     let CURRENT_TOKEN = sessionStorage.getItem('admToken') || ""; 
     let CURRENT_PAGE = 1;
@@ -758,23 +760,22 @@
           body: JSON.stringify({ action: action, payload: payload })
         });
         const result = await response.json();
+        // Cek sukses dari struktur terluar API wrapper
         if (!result.success) throw new Error(result.error);
         return result.data;
       } catch (error) {
-        console.error(`Error on API [${action}]:`, error);
+        console.error(`Error API [${action}]:`, error);
         throw error;
       }
     }
 
     // ==========================================
-    // INITIAL LOAD (Tarik Data Setting Saat Halaman Terbuka)
+    // INITIAL LOAD (Tarik Data Setting)
     // ==========================================
     $(document).ready(async function() {
        showLoading();
        try {
          GLOBAL_CONFIG = await fetchAPI('getAppConfig');
-         
-         // Masukkan data dari database ke elemen HTML
          $('#ui-namasekolah-nav, #ui-namasekolah-footer, #ui-namasekolah-copyright, #ui-namasekolah-admin, #ui-namasekolah-privacy').text(GLOBAL_CONFIG.namasekolah);
          $('#ui-slogan').text(GLOBAL_CONFIG.slogan);
          $('#ui-jalan').text(GLOBAL_CONFIG.jalan);
@@ -797,7 +798,6 @@
             $('#input_instansi').val(GLOBAL_CONFIG.logoinstansi);
          }
 
-         // Isi default form setting di admin
          $('#cfg_sekolah').val(GLOBAL_CONFIG.namasekolah);
          $('#cfg_provinsi').val(GLOBAL_CONFIG.provinsi);
          $('#cfg_slogan').val(GLOBAL_CONFIG.slogan);
@@ -811,10 +811,10 @@
          $('#cfg_running').val(GLOBAL_CONFIG.runningtext);
 
        } catch (err) {
-         Swal.fire('Koneksi Gagal', 'Gagal memuat konfigurasi aplikasi. Pastikan link API benar.', 'error');
+         Swal.fire('Koneksi Gagal', 'Gagal memuat konfigurasi aplikasi.', 'error');
        } finally {
          hideLoading();
-         if(CURRENT_TOKEN) { navigasiKe('dashboard'); } // Auto login jika sesi aktif
+         if(CURRENT_TOKEN) { navigasiKe('dashboard'); } 
        }
     });
 
@@ -832,7 +832,7 @@
     function navigasiKe(halaman) {
       $('.app-wrapper').removeClass('active').hide();
       if (halaman === 'login') {
-          $('#wrapper-login').addClass('active').fadeIn(300);
+          $('#wrapper-login').addClass('active').show();
       } else if (halaman === 'dashboard') {
           if(!CURRENT_TOKEN) {
              showMsg('error', 'Akses Ditolak', 'Silakan login kembali.');
@@ -847,16 +847,17 @@
              $('#wrap-menu-setting').show(); $('#wrap-menu-users').show();   
              $('#nav-mob-setting').show(); $('#nav-mob-users').show();     
           }
-          $('#wrapper-dashboard').addClass('active').fadeIn(300);
+          $('#wrapper-dashboard').addClass('active').show();
           switchAdminTab('dashboard'); 
           loadData(1);
       } else {
-          $('#wrapper-public').addClass('active').fadeIn(300);
+          $('#wrapper-public').addClass('active').show();
           showView('view-home');
       }
       window.scrollTo(0,0);
     }
 
+    // --- LOGIN ---
     async function handleLogin(e) {
       e.preventDefault();
       const u = $('#user').val();
@@ -864,11 +865,14 @@
       showLoading();
       try {
         const res = await fetchAPI('loginAdmin', { user: u, pass: p });
+        if(!res.success) throw new Error(res.error); // FIX BUG 2: Validasi Error dari DB
+        
         CURRENT_TOKEN = res.token;
         sessionStorage.setItem('admToken', res.token);
         sessionStorage.setItem('admRole', res.akses); 
         $('#user').val(''); $('#pass').val('');
-        navigasiKe('dashboard');
+        
+        navigasiKe('dashboard'); // Redirect langsung bekerja normal
         Swal.mixin({toast: true, position: 'top-end', showConfirmButton: false, timer: 3000}).fire({icon: 'success', title: 'Login Berhasil'});
       } catch (err) {
         showMsg('error', 'Gagal', err.message);
@@ -914,10 +918,9 @@
       showLoading();
       try {
         const res = await fetchAPI('simpanPengaduan', { data: dataObj, fileData: uploadedFiles });
+        if(!res.success) throw new Error(res.error);
         Swal.fire({ icon: 'success', title: 'Terkirim!', html: `Nomor Tiket Anda:<br><b style="font-size:1.5rem">${res.ticket}</b><br>Simpan untuk cek status.`, allowOutsideClick: false }).then(() => { form.reset(); uploadedFiles = []; $('#fileListContainer').empty(); showView('view-home'); });
-      } catch (err) {
-        showMsg('error', 'Gagal', err.message);
-      } finally { hideLoading(); }
+      } catch (err) { showMsg('error', 'Gagal', err.message); } finally { hideLoading(); }
     }
 
     async function checkTicket() {
@@ -946,9 +949,13 @@
     }
 
     let chartStatusInstance = null; let chartKategoriInstance = null;
+    
     async function loadDashboardStats() {
       try {
-        const d = await fetchAPI('getDashboardStats', { token: CURRENT_TOKEN });
+        const res = await fetchAPI('getDashboardStats', { token: CURRENT_TOKEN });
+        if(!res.success) throw new Error(res.error);
+        const d = res.data; // FIX BUG 3: Unwrap nested JSON array untuk mengisi grafik
+        
         $('#stat-total').text(d.total); $('#stat-baru').text(d.status['Baru'] || 0); $('#stat-proses').text(d.status['Diproses'] || 0); $('#stat-selesai').text(d.status['Selesai'] || 0);
         const ctxStatus = document.getElementById('chartStatus').getContext('2d');
         if(chartStatusInstance) chartStatusInstance.destroy();
@@ -1005,7 +1012,8 @@
     async function saveUpdate() {
       showLoading();
       try {
-        await fetchAPI('updateStatus', { token: CURRENT_TOKEN, rowIndex: $('#editRow').val(), newStatus: $('#editStatus').val(), catatan: $('#editCatatan').val() });
+        const res = await fetchAPI('updateStatus', { token: CURRENT_TOKEN, rowIndex: $('#editRow').val(), newStatus: $('#editStatus').val(), catatan: $('#editCatatan').val() });
+        if(res !== true) throw new Error("Terjadi kesalahan.");
         $('#modalDetail').modal('hide'); bootstrap.Modal.getInstance(document.getElementById('modalDetail'))?.hide();
         Swal.fire('Terupdate', 'Status laporan berhasil diubah.', 'success'); loadData(CURRENT_PAGE);
       } catch (err) { showMsg('error', 'Gagal', err.message); } finally { hideLoading(); }
@@ -1014,7 +1022,7 @@
     function hapusLaporan(ticketId) {
       Swal.fire({ title: 'Hapus Laporan?', text: "Data yang dihapus tidak bisa dikembalikan!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus'
       }).then(async (result) => {
-        if (result.isConfirmed) { showLoading(); try { await fetchAPI('deleteReport', { token: CURRENT_TOKEN, ticketId: ticketId }); Swal.fire('Dihapus!', '', 'success'); loadData(CURRENT_PAGE); } catch (err) { showMsg('error', 'Gagal', err.message); } finally { hideLoading(); } }
+        if (result.isConfirmed) { showLoading(); try { const res = await fetchAPI('deleteReport', { token: CURRENT_TOKEN, ticketId: ticketId }); if(!res.success) throw new Error(res.error); Swal.fire('Dihapus!', '', 'success'); loadData(CURRENT_PAGE); } catch (err) { showMsg('error', 'Gagal', err.message); } finally { hideLoading(); } }
       });
     }
 
@@ -1037,21 +1045,25 @@
     async function loadUsersData() {
       $('#tableUsers tbody').html('<tr><td colspan="3" class="text-center py-4">Memuat data...</td></tr>');
       try {
-        const data = await fetchAPI('getAllUsers', { token: CURRENT_TOKEN });
-        let html = ''; data.forEach(u => { html += `<tr><td class="ps-4 fw-bold">${u.username}</td><td><span class="badge ${u.akses === 'Semua' || u.akses === 'Superadmin' ? 'bg-danger' : 'bg-primary'}">${u.akses}</span></td><td class="text-end pe-4"><button class="btn btn-sm btn-outline-secondary rounded-circle" onclick="openModalUser(true, '${u.rowIndex}', '${u.username}', '${u.akses}')"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger rounded-circle ms-1" onclick="hapusUserData(${u.rowIndex}, '${u.username}')"><i class="fas fa-trash"></i></button></td></tr>`; });
+        const res = await fetchAPI('getAllUsers', { token: CURRENT_TOKEN });
+        if(!res.success) throw new Error(res.error);
+        let html = ''; res.data.forEach(u => { html += `<tr><td class="ps-4 fw-bold">${u.username}</td><td><span class="badge ${u.akses === 'Semua' || u.akses === 'Superadmin' ? 'bg-danger' : 'bg-primary'}">${u.akses}</span></td><td class="text-end pe-4"><button class="btn btn-sm btn-outline-secondary rounded-circle" onclick="openModalUser(true, '${u.rowIndex}', '${u.username}', '${u.akses}')"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger rounded-circle ms-1" onclick="hapusUserData(${u.rowIndex}, '${u.username}')"><i class="fas fa-trash"></i></button></td></tr>`; }); // FIX BUG 1: Unwrap res.data.forEach
         $('#tableUsers tbody').html(html);
       } catch (err) { $('#tableUsers tbody').html(`<tr><td colspan="3" class="text-center text-danger">${err.message}</td></tr>`); }
     }
+    
     function openModalUser(isEdit = false, rowIndex = '', username = '', akses = 'Semua') { $('#formUser')[0].reset(); $('#u_isEdit').val(isEdit); $('#u_rowIndex').val(rowIndex); if (isEdit) { $('#modalUserTitle').text('Edit Akun'); $('#u_username').val(username); $('#u_role').val(akses); $('#u_password').removeAttr('required'); $('#u_pass_hint').text('(Kosongkan jika tidak ganti password)'); } else { $('#modalUserTitle').text('Tambah Akun'); $('#u_password').attr('required', 'true'); $('#u_pass_hint').text(''); } new bootstrap.Modal(document.getElementById('modalUser')).show(); }
+    
     async function saveUserSubmit(e) {
       e.preventDefault(); showLoading();
-      try { const res = await fetchAPI('saveUserAccount', { token: CURRENT_TOKEN, username: $('#u_username').val(), password: $('#u_password').val(), role: $('#u_role').val(), isEdit: $('#u_isEdit').val() === 'true', rowIndex: parseInt($('#u_rowIndex').val()) }); $('#modalUser').modal('hide'); Swal.fire('Sukses', res.message, 'success'); loadUsersData(); } 
+      try { const res = await fetchAPI('saveUserAccount', { token: CURRENT_TOKEN, username: $('#u_username').val(), password: $('#u_password').val(), role: $('#u_role').val(), isEdit: $('#u_isEdit').val() === 'true', rowIndex: parseInt($('#u_rowIndex').val()) }); if(!res.success) throw new Error(res.error); $('#modalUser').modal('hide'); Swal.fire('Sukses', res.message, 'success'); loadUsersData(); } 
       catch (err) { showMsg('error', 'Gagal', err.message); } finally { hideLoading(); }
     }
+    
     function hapusUserData(rowIndex, username) {
       if(username.toLowerCase() === 'admin') return Swal.fire('Ditolak', 'Akun admin utama tidak boleh dihapus.', 'error');
       Swal.fire({ title: `Hapus ${username}?`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Hapus' }).then(async (result) => {
-        if (result.isConfirmed) { showLoading(); try { await fetchAPI('deleteUserAccount', { token: CURRENT_TOKEN, rowIndex: rowIndex }); loadUsersData(); } catch (err) { showMsg('error', 'Gagal', err.message); } finally { hideLoading(); } }
+        if (result.isConfirmed) { showLoading(); try { const res = await fetchAPI('deleteUserAccount', { token: CURRENT_TOKEN, rowIndex: rowIndex }); if(!res.success) throw new Error(res.error); loadUsersData(); } catch (err) { showMsg('error', 'Gagal', err.message); } finally { hideLoading(); } }
       });
     }
 
@@ -1060,17 +1072,19 @@
     let cropper; let currentCropType = '';
     function startCrop(type) { currentCropType = type; $('#cropInput').click(); }
     $('#cropInput').change(function(e) { if (e.target.files && e.target.files[0]) { const reader = new FileReader(); reader.onload = function(evt) { $('#imageToCrop').attr('src', evt.target.result); $('#modalCrop').modal('show'); if(cropper) cropper.destroy(); setTimeout(() => { cropper = new Cropper(document.getElementById('imageToCrop'), { aspectRatio: 1, viewMode: 1, autoCropArea: 1 }); }, 500); }; reader.readAsDataURL(e.target.files[0]); } });
+    
     async function cropAndUpload() {
       if(!cropper) return;
       const base64 = cropper.getCroppedCanvas({width: 200, height: 200}).toDataURL('image/png').split(',')[1];
       $('#modalCrop').modal('hide'); showLoading();
-      try { const res = await fetchAPI('uploadLogoFromSetup', { base64Data: base64, filename: "Logo_" + new Date().getTime() + ".png" }); if(currentCropType === 'logo') { $('#preview_logo, #ui-logo-nav').attr('src', res.url); $('#input_logo').val(res.url); } else { $('#preview_instansi').attr('src', res.url); $('#input_instansi').val(res.url); } } 
+      try { const res = await fetchAPI('uploadLogoFromSetup', { base64Data: base64, filename: "Logo_" + new Date().getTime() + ".png" }); if(!res.success) throw new Error(res.error); if(currentCropType === 'logo') { $('#preview_logo, #ui-logo-nav').attr('src', res.url); $('#input_logo').val(res.url); } else { $('#preview_instansi').attr('src', res.url); $('#input_instansi').val(res.url); } } 
       catch (err) { showMsg('error', 'Gagal', err.message); } finally { hideLoading(); }
     }
+    
     async function saveSettings(e) {
       e.preventDefault(); const form = document.getElementById('formSetting');
       const data = { cfg_logo: form.cfg_logo.value, cfg_instansi: form.cfg_instansi.value, cfg_sekolah: form.cfg_sekolah.value, cfg_provinsi: form.cfg_provinsi.value, cfg_slogan: form.cfg_slogan.value, cfg_jalan: form.cfg_jalan.value, cfg_telp: form.cfg_telp.value, cfg_email: form.cfg_email.value, cfg_tahun: form.cfg_tahun.value, cfg_website: form.cfg_website.value, cfg_dinas: form.cfg_dinas.value, cfg_spmb: form.cfg_spmb.value, cfg_running: form.cfg_running.value };
-      showLoading(); try { await fetchAPI('saveAppConfig', { form: data, token: CURRENT_TOKEN }); Swal.fire('Tersimpan', 'Pengaturan berhasil disimpan. Silakan refresh halaman.', 'success'); } catch (err) { showMsg('error', 'Gagal', err.message); } finally { hideLoading(); }
+      showLoading(); try { const res = await fetchAPI('saveAppConfig', { form: data, token: CURRENT_TOKEN }); if(!res.success) throw new Error(res.error); Swal.fire('Tersimpan', 'Pengaturan berhasil disimpan. Silakan refresh halaman.', 'success'); } catch (err) { showMsg('error', 'Gagal', err.message); } finally { hideLoading(); }
     }
 
     // --- UI UX ---
