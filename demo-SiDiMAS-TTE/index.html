@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <title>Demo SiDiMAS TTE</title>
+    <title>Demo SiDiMAS TTE v2</title>
     <link rel="icon" type="image/png" href="./imgsidimas.png">
 
 
@@ -187,7 +187,38 @@ input, button, select, textarea {
              <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center"><h5 class="mb-0"><i class="fas fa-magic me-2"></i>Generator Surat</h5><button class="btn btn-light btn-sm btn-refresh text-success" onclick="loadInitData(); gantiFormSurat()" title="Refresh"><i class="fas fa-sync-alt"></i></button></div>
              <div class="card-body">
                  <form id="formGen" onsubmit="submitGenerate(event)" autocomplete="off">
-                     <div class="alert alert-success border-success"><label class="fw-bold mb-1">Pilih Jenis Template Surat:<a> (Template disesuaikan dengan Permendagri No. 1 Tahun 2023)</a></label><select id="pilihJenisSurat" name="templateId" class="form-select fw-bold form-select-lg" onchange="gantiFormSurat()"></select></div>
+                     
+                     <div class="btn-group w-100 mb-3 shadow-sm" role="group">
+    <input type="radio" class="btn-check" name="modeSurat" id="modeSistem" value="sistem" checked onchange="toggleModeSurat()">
+    <label class="btn btn-outline-primary fw-bold" for="modeSistem"><i class="fas fa-list-alt me-1"></i> Template Sistem</label>
+
+    <input type="radio" class="btn-check" name="modeSurat" id="modeUpload" value="upload" onchange="toggleModeSurat()">
+    <label class="btn btn-outline-primary fw-bold" for="modeUpload"><i class="fas fa-upload me-1"></i> Upload Word (.docx)</label>
+</div>
+
+<div id="wrap-mode-sistem">
+    <div class="alert alert-success border-success">
+        <label class="fw-bold mb-1">Pilih Jenis Template Surat:<a> (Template disesuaikan dengan Permendagri No. 1 Tahun 2023)</a></label>
+        <select id="pilihJenisSurat" name="templateId" class="form-select fw-bold form-select-lg" onchange="gantiFormSurat()"></select>
+    </div>
+</div>
+
+<div id="wrap-mode-upload" class="hide">
+    <div class="alert alert-warning border-warning">
+        <h6 class="fw-bold text-dark mb-2"><i class="fas fa-exclamation-circle text-danger me-2"></i> TIPS AGAR FORMAT TIDAK BERANTAKAN:</h6>
+        <ul class="small text-dark mb-0 ps-3">
+            <li>Gunakan font standar (Arial / Times New Roman / Calibri).</li>
+            <li><strong>DILARANG</strong> memakai <i>Text Box</i> (Kotak Teks). Gunakan tabel transparan untuk menata posisi tanda tangan.</li>
+            <li>Pastikan ekstensi file wajib <b>.docx</b> (Bukan PDF atau .doc lama).</li>
+        </ul>
+        <hr>
+        <label class="fw-bold mb-1">Upload File Anda:</label>
+        <input type="file" id="fileUploadDocx" accept=".docx" class="form-control form-control-lg border-warning">
+        <div class="form-text mt-2"><i class="fas fa-info-circle"></i> Pastikan di dalam dokumen Anda sudah diketik teks <b>{NOMOR_SURAT}</b> dan <b>{QR_TTE}</b>.</div>
+    </div>
+    <input type="hidden" name="isUploadMode" id="isUploadMode" value="false">
+</div>
+
                      <h6 class="text-secondary border-bottom pb-2 mt-4">1. Kepala Surat</h6>
                      <div class="row mb-3">
                         <div class="col-md-5"><label>Kode Klasifikasi (Berdasarkan Permendagri No. 83 Tahun 2022)</label>
@@ -528,7 +559,7 @@ input, button, select, textarea {
   <script>
   /* --- KONFIGURASI API (URL DARI GOOGLE APPS SCRIPT) --- */
   // NANTI GANTI LINK DI BAWAH INI DENGAN LINK HASIL DEPLOY APPS SCRIPT KAMU
-  const API_URL = "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbyLhWr8LYe329yeFCaeopWQm7gikYjwkYnVPNI8J3JcWVTWELeeY6KseNEp8rltT3XE/exec"; 
+  const API_URL = "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbzzIsp4oqTI6MwpO375zHSE2xUQWgCpNHm9I6Mx5eBi_tQTc-psRi-KtTVCEGzVV-3j/exec"; 
 
   /* --- FUNGSI JEMBATAN PENGHUBUNG (FETCH API) --- */
   async function apiCall(actionName, payloadData = {}) {
@@ -820,6 +851,31 @@ input, button, select, textarea {
   }
 
   /* --- GENERATOR SURAT --- */
+  function toggleModeSurat() {
+    const mode = $('input[name="modeSurat"]:checked').val();
+    if(mode === 'upload') {
+        $('#wrap-mode-sistem').addClass('hide');
+        $('#wrap-mode-upload').removeClass('hide');
+        $('#isUploadMode').val('true');
+        
+        // Sembunyikan isian detail karena isi surat sudah ada di Word
+        $('.form-box').addClass('hide').find('input,textarea,select').prop('disabled', true);
+        // Kita hanya butuh nomor urut & perihal (Perihal wajib untuk nama file)
+        $('input[name="perihal"]').prop('disabled', false).val('').attr('placeholder', 'Masukkan Perihal Surat (Wajib)');
+        $('#box-umum').removeClass('hide').find('.col-md-2, .col-md-10, .col-md-6:not(:first), .mb-2').addClass('hide'); 
+        $('#box-umum .row:first .col-md-6').removeClass('hide'); // Hanya tampilkan perihal
+        $('#box-tembusan').addClass('hide').find('textarea').prop('disabled', true); // Sembunyikan tembusan (sudah ada di word)
+    } else {
+        $('#wrap-mode-sistem').removeClass('hide');
+        $('#wrap-mode-upload').addClass('hide');
+        $('#isUploadMode').val('false');
+        
+        // Kembalikan form seperti semula
+        $('#box-umum').find('.hide').removeClass('hide'); 
+        gantiFormSurat();
+    }
+}
+  
   function gantiFormSurat() { 
   const t = $('#pilihJenisSurat option:selected').text().toLowerCase() || ""; 
   $('.form-box').addClass('hide').find('input,textarea,select').prop('disabled', true); 
@@ -849,29 +905,54 @@ input, button, select, textarea {
     e.preventDefault(); 
     if(!$('#inpTglSurat').val()){Swal.fire('Info','Tgl Surat wajib diisi','warning');return;} 
     
+    const mode = $('input[name="modeSurat"]:checked').val();
+    const fileInput = document.getElementById('fileUploadDocx');
+    
+    if(mode === 'upload' && fileInput.files.length === 0) {
+        Swal.fire('Info', 'Harap pilih file dokumen (.docx) terlebih dahulu!', 'warning');
+        return;
+    }
+
     setBtnLoading('#btnGen', true, 'Memproses...'); 
     updatePreview(); updateTanggalSurat(); updateTanggalSaja(); updateHariAcara(); 
     const fd = new FormData(e.target); 
     const dataObj = Object.fromEntries(fd); 
-    
-    // --- TAMBAHKAN 2 BARIS INI AGAR SISTEM TAHU SIAPA YANG MEMBUAT SURAT ---
+
     dataObj.currentUser = localStorage.getItem('sidimas_user');
     dataObj.currentRole = localStorage.getItem('sidimas_role');
-    // -----------------------------------------------------------------------
-    // --- INI BARIS TAMBAHANNYA ---
-    showLoadingTimer2('Membuat Dokumen...');
+    
+    // --- JIKA MODE UPLOAD, UBAH FILE KE BASE64 DULU SEBELUM KIRIM ---
+    if (mode === 'upload') {
+        if (!dataObj.perihal) {
+            setBtnLoading('#btnGen', false, 'GENERATE DOKUMEN'); 
+            Swal.fire('Info', 'Kolom Perihal wajib diisi untuk penamaan arsip!', 'warning');
+            return;
+        }
+        
+        showLoadingTimer2('Mengonversi File Word...');
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            dataObj.fileData = ev.target.result.split(',')[1];
+            // Lanjut panggil API setelah file siap
+            panggilApiGenerate(dataObj);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        showLoadingTimer2('Membuat Dokumen...');
+        panggilApiGenerate(dataObj);
+    }
+}
 
+// Fungsi pembantu agar kode rapi
+function panggilApiGenerate(dataObj) {
     apiCall('generateDokumen', dataObj)
        .then(r=>{ 
           setBtnLoading('#btnGen', false, 'GENERATE DOKUMEN'); 
           if(r.success){ 
-              // JIKA SURAT MASUK DRAFT (Menunggu Admin / Kepsek)
               if(r.isDraft) {
                   Swal.fire('Berhasil Terkirim!', r.message, 'success');
-                  resetGenerator(); // Bersihkan form
-              } 
-              // JIKA ADMIN CETAK MANUAL (Langsung jadi PDF)
-              else {
+                  resetGenerator(); 
+              } else {
                   $('#hasilGenerate').removeClass('hide'); 
                   $('#linkPdf').attr('href',r.pdfUrl); 
                   $('#linkWord').attr('href',r.wordUrl); 
